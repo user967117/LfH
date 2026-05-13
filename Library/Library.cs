@@ -9,99 +9,70 @@ public class Library
 
     public Dictionary<int, Book> books = new Dictionary<int, Book>();
     
-    public Library()
+    private readonly IStorage _storage;
+
+    public Library(IStorage storage)
     {
+        _storage = storage;
         LoadData(); 
     }
-    
-    private void SaveData() => StorageService.Save(books);
-    
+
+    private void SaveData() => _storage.Save(books);
+
     private void LoadData() 
     {
-        books = StorageService.Load();
+        books = _storage.Load();
     }
     
-    public void AddBook(Book book)
+    public bool AddBook(Book book)
     {
         if (books.TryAdd(book.ID, book))
         {
-            Console.WriteLine("Successfully added\n");
-            SaveData(); 
+            SaveData();
+            return true;
         }
-        else
-        {
-            Console.WriteLine("Failed to add: ID already exists\n");
-        }
+        return false;
     }
 
-    public void RemoveBook(Book book)
+    public bool RemoveBook(int id)
     {
-        if (books.Remove(book.ID))
+        if (books.Remove(id))
         {
-            Console.WriteLine("Successfully removed\n");
             SaveData(); 
+            return true;
         }
-        else
-        {
-            Console.WriteLine("Failed to remove\n");
-        }
+        return false;
     }
 
-    public void SearchBook(string search)
+    public IEnumerable<Book> SearchBook(string search)
     {
-        var searcedBooks = books.Values.Where(book => book.Title.Contains(search) || book.Author.Contains(search)).ToList();
-
-        if (!searcedBooks.Any())
-        {
-            Console.WriteLine("No books found\n");
-            return;
-        }
-
-        foreach (var book in searcedBooks)
-        {
-            Console.WriteLine($"Title:{book.Title} Author:{book.Author} Year:{book.Year} ID:{book.ID}");
-        }
+        return books.Values.Where(book => book.Title.Contains(search) || book.Author.Contains(search)).ToList();
     }
     
-    public void ShowAllFreeBooks()
+    public IEnumerable<Book> ShowAllFreeBooks()
     { 
-        var freeBooks = books.Values.Where(book => book.Status).ToList();
-        if (!freeBooks.Any())
-        {
-            Console.WriteLine("No free books found\n");
-            return;
-        }
-        foreach (var book in freeBooks)
-        {
-            Console.WriteLine($"Title: {book.Title} | Author: {book.Author} | Year: {book.Year} | ID: {book.ID}");
-        }
+        return books.Values.Where(book => book.Status == BookStatus.Avaliable).ToList();
     }
 
-    public void BorrowBook(Book book)
+    public bool BorrowBook(Book book)
     {
-        if (book.Status)
+        if (book.Status == BookStatus.Avaliable)
         {
-            book.Status = false;
-            Console.WriteLine($"Book '{book.Title}' successfully borrowed\n");
+            book.Status = BookStatus.Borrowed;
             SaveData(); 
+            return  true;
         }
-        else
-        {
-            Console.WriteLine($"Book '{book.Title}' is already borrowed\n");
-        }
+        return  false;
     }
 
-    public void ReturnBook(Book book)
+    public bool ReturnBook(Book book)
     {
-        if (!book.Status) 
+        if (book.Status == BookStatus.Borrowed) 
         {
-            book.Status = true;
-            Console.WriteLine($"Book '{book.Title}' successfully returned\n");
+            book.Status = BookStatus.Avaliable;
             SaveData(); 
+            return true;
         }
-        else
-        {
-            Console.WriteLine($"Book '{book.Title}' is already in the library\n");
-        }
+        return false;
     }
 }

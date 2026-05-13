@@ -1,41 +1,35 @@
-﻿using System.Text.Json;
-using System.IO;
+﻿using System.Collections.Generic;
+using System.Text.Json;
 
 namespace lbrry;
 
-public static class StorageService
+public interface IStorage
 {
-    private const string FilePath = "library.json";
-    
-    public static void Save(Dictionary<int, Book> books)
-    {
-        try
-        {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            string jsonString = JsonSerializer.Serialize(books, options);
-            File.WriteAllText(FilePath, jsonString);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error saving data: {ex.Message}");
-        }
-    }
-    
-    public static Dictionary<int, Book> Load()
-    {
-        try
-        {
-            if (!File.Exists(FilePath)) 
-                return new Dictionary<int, Book>();
+    void Save(Dictionary<int, Book> books);
+    Dictionary<int, Book> Load();
+}
 
-            string jsonString = File.ReadAllText(FilePath);
-            
-            return JsonSerializer.Deserialize<Dictionary<int, Book>>(jsonString) ?? new Dictionary<int, Book>();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error loading data: {ex.Message}");
+public class JsonStorageService : IStorage
+{
+    private readonly string _filePath;
+    public JsonStorageService(string filePath = "library.json")
+    {
+        _filePath = filePath;
+    }
+
+    public void Save(Dictionary<int, Book> books)
+    {
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        string jsonString = JsonSerializer.Serialize(books, options);
+        File.WriteAllText(_filePath, jsonString);
+    }
+
+    public Dictionary<int, Book> Load()
+    {
+        if (!File.Exists(_filePath)) 
             return new Dictionary<int, Book>();
-        }
+        
+        string jsonString = File.ReadAllText(_filePath);
+        return JsonSerializer.Deserialize<Dictionary<int, Book>>(jsonString) ?? new Dictionary<int, Book>();
     }
 }
