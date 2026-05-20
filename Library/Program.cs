@@ -1,4 +1,4 @@
-﻿using lbrry;
+﻿using Librarry;
 
 class Program
 {
@@ -8,7 +8,7 @@ class Program
         
         Library library = new Library(storage);
 
-        ConsoleLibraryUI libraryUI = new ConsoleLibraryUI(library);
+        ConsoleCommandsHandler libraryUI = new ConsoleCommandsHandler(library);
         while (true)
         {
             Console.WriteLine("Library menu");

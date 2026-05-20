@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json;
 
-namespace lbrry;
+namespace Librarry;
 
 public interface IStorage
 {

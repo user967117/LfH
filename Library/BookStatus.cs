@@ -1,4 +1,4 @@
-﻿namespace lbrry;
+﻿namespace Librarry;
 
 public enum BookStatus
 {

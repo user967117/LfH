@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace lbrry;
+namespace Librarry;
 
 public class Library
 {
@@ -46,7 +46,7 @@ public class Library
 
     public IEnumerable<Book> SearchBook(string search)
     {
-        return books.Values.Where(book => book.Title.Contains(search) || book.Author.Contains(search)).ToList();
+        return books.Values.Where(book => book.Title.Contains(search, StringComparison.OrdinalIgnoreCase) || book.Author.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
     }
     
     public IEnumerable<Book> ShowAllFreeBooks()

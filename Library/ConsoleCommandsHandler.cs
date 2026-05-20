@@ -1,10 +1,10 @@
-﻿namespace lbrry;
+﻿namespace Librarry;
 
-public class ConsoleLibraryUI
+public class ConsoleCommandsHandler
 {
     private readonly Library _library;
 
-    public ConsoleLibraryUI(Library library)
+    public ConsoleCommandsHandler(Library library)
     {
         _library = library;
     }
@@ -18,10 +18,18 @@ public class ConsoleLibraryUI
         var author = Console.ReadLine();
         
         Console.WriteLine("Enter Year: ");
-        var year = int.Parse(Console.ReadLine());
+        int year;
+        while (!int.TryParse(Console.ReadLine(), out year))
+        {
+            Console.WriteLine("Enter valid year");
+        }
         
         Console.WriteLine("Enter ID: ");
-        var id = int.Parse(Console.ReadLine());
+        int id;
+        while (!int.TryParse(Console.ReadLine(), out  id))
+        {
+            Console.WriteLine("Enter valid ID");
+        }
         
         var newBook = new Book(title, author, year, id);
 
@@ -39,7 +47,11 @@ public class ConsoleLibraryUI
     public void RemoveBook()
     {
         Console.WriteLine("Enter book ID you want to remove: ");
-        var ID = int.Parse(Console.ReadLine());
+        int ID;
+        while (!int.TryParse(Console.ReadLine(), out ID))
+        {
+            Console.WriteLine("Enter valid ID");
+        }
         
         var succes = _library.RemoveBook(ID);
         if (succes)
