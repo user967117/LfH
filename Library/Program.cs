@@ -2,13 +2,14 @@
 
 class Program
 {
-    static void Main()
+    static async Task Main()
     {
         IStorage storage = new JsonStorageService();
         
         Library library = new Library(storage);
 
         ConsoleCommandsHandler libraryUI = new ConsoleCommandsHandler(library);
+        
         while (true)
         {
             Console.WriteLine("Library menu");
@@ -19,6 +20,7 @@ class Program
             Console.WriteLine("4. Show all free books");
             Console.WriteLine("5. Borrow book");
             Console.WriteLine("6. Return book");
+            Console.WriteLine("7. Mass Test");
             
             var switcher = Console.ReadLine();
 
@@ -41,6 +43,9 @@ class Program
                     break;
                 case "6":
                     libraryUI.ReturnBook();
+                    break;
+                case "7":
+                    await LibrarySimulation.RunMassSimulation(library, 100);
                     break;
             }
         }

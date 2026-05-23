@@ -6,6 +6,7 @@ namespace Librarry;
 
 public class Library
 {
+    private readonly object _lockObj = new object();
 
     public Dictionary<int, Book> books = new Dictionary<int, Book>();
     
@@ -56,23 +57,30 @@ public class Library
 
     public bool BorrowBook(Book book)
     {
-        if (book.Status == BookStatus.Avaliable)
+        lock (_lockObj)
         {
-            book.Status = BookStatus.Borrowed;
-            SaveData(); 
-            return  true;
+            if (book.Status == BookStatus.Avaliable)
+            {
+                book.Status = BookStatus.Borrowed;
+                SaveData();
+                return true;
+            }
+
+            return false;
         }
-        return  false;
     }
 
     public bool ReturnBook(Book book)
     {
-        if (book.Status == BookStatus.Borrowed) 
+        lock (_lockObj)
         {
-            book.Status = BookStatus.Avaliable;
-            SaveData(); 
-            return true;
+            if (book.Status == BookStatus.Borrowed) 
+            {
+                book.Status = BookStatus.Avaliable;
+                SaveData(); 
+                return true;
+            }
+            return false;  
         }
-        return false;
     }
 }
