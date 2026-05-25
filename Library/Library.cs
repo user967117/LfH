@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Concurrent;
 
 namespace Librarry;
 
 public class Library
 {
-    private readonly object _lockObj = new object();
+    private readonly Lock _lockObj = new Lock();
 
-    public Dictionary<int, Book> books = new Dictionary<int, Book>();
+    public ConcurrentDictionary<int, Book> books = new ConcurrentDictionary<int, Book>();
     
     private readonly IStorage _storage;
 
@@ -18,11 +19,12 @@ public class Library
         LoadData(); 
     }
 
-    private void SaveData() => _storage.Save(books);
+    private void SaveData() => _storage.Save(books.ToDictionary(b => b.Key, b => b.Value));
 
     private void LoadData() 
     {
-        books = _storage.Load();
+        var loadedData = _storage.Load();
+        books = new ConcurrentDictionary<int, Book>(loadedData);
     }
     
     public bool AddBook(Book book)
@@ -37,7 +39,7 @@ public class Library
 
     public bool RemoveBook(int id)
     {
-        if (books.Remove(id))
+        if (books.TryRemove(id, out _))
         {
             SaveData(); 
             return true;

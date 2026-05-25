@@ -6,7 +6,7 @@ public class LibrarySimulation
     {
         Task[] visitors = new Task[totalVisitors];
         
-        List<Book> availibleBooks = library.ShowAllFreeBooks().ToList();
+        List<Book> availableBooks = library.ShowAllFreeBooks().ToList();
         
         Console.WriteLine("\nStarting simulation");
 
@@ -16,14 +16,14 @@ public class LibrarySimulation
 
             visitors[i] = Task.Run(async () =>
             {
-                if (availibleBooks.Count == 0)
+                if (availableBooks.Count == 0)
                 {
                     Console.WriteLine("No books found");
                     return;
                 }
 
-                int randomIndex = Random.Shared.Next(0, availibleBooks.Count);
-                Book chosenBook = availibleBooks[randomIndex];
+                int randomIndex = Random.Shared.Next(0, availableBooks.Count);
+                Book chosenBook = availableBooks[randomIndex];
 
                 if (library.BorrowBook(chosenBook))
                 {
