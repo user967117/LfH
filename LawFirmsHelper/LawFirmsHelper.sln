@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LawFirmsHelper", "LawFirmsHelper\LawFirmsHelper.csproj", "{5ACC3323-3BF2-4706-9ADC-7D6E6C16D7EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5ACC3323-3BF2-4706-9ADC-7D6E6C16D7EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ACC3323-3BF2-4706-9ADC-7D6E6C16D7EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ACC3323-3BF2-4706-9ADC-7D6E6C16D7EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ACC3323-3BF2-4706-9ADC-7D6E6C16D7EA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
