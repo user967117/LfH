@@ -22,10 +22,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Update="Services\appsettings.json">
+      <Content Update="appsettings.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-      <Content Update="Services\appsettings.Development.json">
+      <Content Update="appsettings.Development.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
