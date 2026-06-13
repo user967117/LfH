@@ -1,4 +1,5 @@
 using LawFirmsHelper;
+using LawFirmsHelper.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 
@@ -27,7 +28,7 @@ public static class EndpointExtentions
                 Email = model.Email
             };
             
-            var result = await userManager.CreateAsync(user);
+            var result = await userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
@@ -37,27 +38,31 @@ public static class EndpointExtentions
             return Results.BadRequest();
         });
 
-        app.MapPost("/api/auth/login", async (LoginRequest model, SignInManager<IdentityUser> signInManager) =>
+        app.MapPost("/api/auth/login", async (LoginRequest model, UserManager<IdentityUser> userManager, IJwtService jwtService) =>
         {
             if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password))
             {
                 return Results.BadRequest();
             }
             
-            var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
-
-            if (result.Succeeded)
-            {
-                return Results.Ok();
-            }
-
-            if (result.IsLockedOut)
+            var user = await userManager.FindByEmailAsync(model.Email);
+            if (user == null)
             {
                 return Results.BadRequest();
             }
             
-            return Results.BadRequest();
+            var isPasswordValid = await userManager.CheckPasswordAsync(user, model.Password);
+            if (!isPasswordValid)
+            {
+                return Results.BadRequest();
+            }
+            
+            var tokenString = jwtService.GenerateJwt(user);
+
+            return Results.Ok(new { token = tokenString });
         });
+        
+        
         return app;
     }
 }

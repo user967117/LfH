@@ -2,7 +2,7 @@ using LawFirmsHelper.Extentions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddServices(builder.Configuration);
+builder.AddServices();
 
 var app = builder.Build();
 
