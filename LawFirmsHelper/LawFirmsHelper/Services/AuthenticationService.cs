@@ -18,10 +18,17 @@ public class AuthenticationService : IAuthenticationService
         return await _userManager.CreateAsync(user, password);
     }
 
-    public async Task<string?> LoginAsync(string email, string password)
+    public async Task<string?> LoginAsync(string email, string password, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, password))
+        {
+            return null;
+        }
+        
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!await _userManager.CheckPasswordAsync(user, password))
         {
             return null;
         }

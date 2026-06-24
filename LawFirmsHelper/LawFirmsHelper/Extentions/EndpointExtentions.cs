@@ -15,9 +15,9 @@ public static class EndpointExtentions
             return result.Succeeded ? Results.Ok() : Results.BadRequest();
         });
 
-        app.MapPost("/api/auth/login", async (LoginRequest model, IAuthenticationService authService) =>
+        app.MapPost("/api/auth/login", async (LoginRequest model, IAuthenticationService authService, CancellationToken cancellationToken) =>
         {
-            var token = await authService.LoginAsync(model.Email, model.Password);
+            var token = await authService.LoginAsync(model.Email, model.Password, cancellationToken);
             return token != null ? Results.Ok(new {token}) : Results.BadRequest();
         });
         
