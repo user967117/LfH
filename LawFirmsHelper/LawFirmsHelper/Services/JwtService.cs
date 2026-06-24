@@ -7,9 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace LawFirmsHelper.Services;
 
-public class JwtService(IOptions<JwtOption> jwtOptions) : IJwtService
+public class JwtService(IOptions<JwtOptions> jwtOptions) : IJwtService
 {
-    private readonly JwtOption _jwtOptions = jwtOptions.Value;
+    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
     
     public string GenerateJwt(IdentityUser user)
     {
@@ -17,7 +17,7 @@ public class JwtService(IOptions<JwtOption> jwtOptions) : IJwtService
         {
             Subject = new ClaimsIdentity(new[]
             {
-                new Claim("Id", user.Id),
+                new Claim(ClaimConstants.Id, user.Id),
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
@@ -35,9 +35,4 @@ public class JwtService(IOptions<JwtOption> jwtOptions) : IJwtService
         
         return tokenHandler.WriteToken(token);
     }
-}
-
-public interface IJwtService
-{
-   string GenerateJwt(IdentityUser user);
 }

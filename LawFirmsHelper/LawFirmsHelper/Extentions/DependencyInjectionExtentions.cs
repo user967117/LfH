@@ -13,7 +13,7 @@ public static class DependencyInjectionExtentions
        builder.Services.AddEndpointsApiExplorer();
        builder.Services.AddSwaggerGen(); 
        builder.Services.AddScoped<IJwtService, JwtService>();
-       
+       builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
        builder.Services.AddAuthorization();
        
        builder.Services.AddDbContext<AppDbContext>(options =>
@@ -47,7 +47,7 @@ public static class DependencyInjectionExtentions
            };
        });
        
-       builder.Services.Configure<JwtOption>(builder.Configuration.GetSection(nameof(JwtOption)));
+       builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
        
        builder.Services.AddScoped<IJwtService, JwtService>();
         return builder;

@@ -1,7 +1,5 @@
-namespace LawFirmsHelper.DTO;
+namespace LawFirmsHelper.Requests;
 
-public class DTO
-{
     public class RegisterRequest
     {
         public string Email { get; set; }
@@ -13,4 +11,3 @@ public class DTO
         public string Email { get; set; }
         public string Password { get; set; }
     }
-}

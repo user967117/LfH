@@ -1,6 +1,6 @@
 namespace LawFirmsHelper;
 
-public class JwtOption
+public class JwtOptions
 {
     public string Issuer { get; set; }
     
