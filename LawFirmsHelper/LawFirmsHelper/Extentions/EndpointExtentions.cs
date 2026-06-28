@@ -1,7 +1,11 @@
+using System.Security.Claims;
 using LawFirmsHelper;
+using LawFirmsHelper.Requests;
 using LawFirmsHelper.Services;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.VisualBasic;
+using LoginRequest = Microsoft.AspNetCore.Identity.Data.LoginRequest;
+using RegisterRequest = Microsoft.AspNetCore.Identity.Data.RegisterRequest;
 
 namespace LawFirmsHelper.Extentions;
 
@@ -20,7 +24,22 @@ public static class EndpointExtentions
             var token = await authService.LoginAsync(model.Email, model.Password, cancellationToken);
             return token != null ? Results.Ok(new {token}) : Results.BadRequest();
         });
-        
+
+
+        app.MapPost("/api/firms/create", async (CreateFirmRequest request, ClaimsPrincipal user,
+            IFirmService firmService, CancellationToken cancellationToken) =>
+        {
+            var userId = user.FindFirstValue(ClaimConstants.Id);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Results.Unauthorized();
+            }
+
+            var firm = await firmService.CreateAsync(userId, request, cancellationToken);
+            
+            return Results.Ok(firm);
+        }).RequireAuthorization();
         
         return app;
     }
