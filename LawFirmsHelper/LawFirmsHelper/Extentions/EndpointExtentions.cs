@@ -29,17 +29,8 @@ public static class EndpointExtentions
         app.MapPost("/api/firms", async (CreateFirmRequest request, IUserContextService userContextService,
             IFirmService firmService, CancellationToken cancellationToken) =>
         {
-            var context = userContextService.GetContext();
-            var userId = context.UserId;
-            
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Results.Unauthorized();
-            }
-
-            var firm = await firmService.CreateAsync(userId, request, cancellationToken);
-            
-            return Results.Ok(firm);
+          var firm = await firmService.CreateAsync(request, cancellationToken);
+          return Results.Ok(firm);
         }).RequireAuthorization();
         
         return app;

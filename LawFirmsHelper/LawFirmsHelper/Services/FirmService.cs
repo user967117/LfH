@@ -7,15 +7,26 @@ namespace LawFirmsHelper.Services;
 public class FirmService : IFirmService
 {
     private readonly AppDbContext _dbContext;
+    private readonly IUserContextService _userContextService;
 
-    public FirmService(AppDbContext dbContext)
+    public FirmService(AppDbContext dbContext, IUserContextService userContextService)
     {
         _dbContext = dbContext;
+        _userContextService = userContextService;
     }
 
-    public async Task<Firm> CreateAsync(Firm firm, CreateFirmRequest request,
+    public async Task<Firm> CreateAsync(CreateFirmRequest request,
         CancellationToken cancellationToken = default)
     {
+        var context = _userContextService.GetContext();
+        var userId = context.UserId;
+
+        var firm = new Firm
+        {
+            Name = request.Name,
+            OwnerId = userId
+        };
+        
         await _dbContext.Firm.AddAsync(firm, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         
@@ -26,18 +37,5 @@ public class FirmService : IFirmService
     {
         return await _dbContext.Firm.ToListAsync(cancellationToken);
     }
-
-    public async Task<Firm> CreateAsync(string ownerId, CreateFirmRequest request, CancellationToken cancellationToken = default)
-    {
-        var firm = new Firm
-        {
-            Name = request.Name,
-            OwnerId = ownerId
-        };
-        await _dbContext.Firm.AddAsync(firm, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        
-        return firm;
-
-    }
+    
 }
