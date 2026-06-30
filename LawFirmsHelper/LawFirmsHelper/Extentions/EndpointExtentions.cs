@@ -26,11 +26,12 @@ public static class EndpointExtentions
         });
 
 
-        app.MapPost("/api/firms/create", async (CreateFirmRequest request, ClaimsPrincipal user,
+        app.MapPost("/api/firms", async (CreateFirmRequest request, IUserContextService userContextService,
             IFirmService firmService, CancellationToken cancellationToken) =>
         {
-            var userId = user.FindFirstValue(ClaimConstants.Id);
-
+            var context = userContextService.GetContext();
+            var userId = context.UserId;
+            
             if (string.IsNullOrEmpty(userId))
             {
                 return Results.Unauthorized();

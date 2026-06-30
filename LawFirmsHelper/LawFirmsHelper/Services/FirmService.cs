@@ -1,31 +1,43 @@
 using LawFirmsHelper.Models;
 using LawFirmsHelper.Requests;
+using Microsoft.EntityFrameworkCore;
 
 namespace LawFirmsHelper.Services;
 
 public class FirmService : IFirmService
 {
-    private readonly List<Firms> _firms = new();
-    private readonly Lock _lock = new();
+    private readonly AppDbContext _dbContext;
 
-    public Task<Firms> CreateAsync(string ownerId, CreateFirmRequest request,
+    public FirmService(AppDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    public async Task<Firm> CreateAsync(Firm firm, CreateFirmRequest request,
         CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        var firm = new Firms
-        {
-            Id = Guid.NewGuid(),
-            Name = request.Name,
-            OwnerID = ownerId,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        lock (_lock)
-        {
-            _firms.Add(firm);
-        }
+        await _dbContext.Firm.AddAsync(firm, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
         
-        return Task.FromResult(firm);
+        return firm;
+    }
+
+    public async Task<List<Firm>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Firm.ToListAsync(cancellationToken);
+    }
+
+    public async Task<Firm> CreateAsync(string ownerId, CreateFirmRequest request, CancellationToken cancellationToken = default)
+    {
+        var firm = new Firm
+        {
+            Name = request.Name,
+            OwnerId = ownerId
+        };
+        await _dbContext.Firm.AddAsync(firm, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        
+        return firm;
+
     }
 }

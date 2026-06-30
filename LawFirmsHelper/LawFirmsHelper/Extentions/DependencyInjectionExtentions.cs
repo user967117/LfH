@@ -43,7 +43,10 @@ public static class DependencyInjectionExtentions
        builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
        builder.Services.AddAuthorization();
        
-       builder.Services.AddSingleton<IFirmService, FirmService>();
+       builder.Services.AddHttpContextAccessor();
+       builder.Services.AddScoped<IUserContextService, UserContextService>();
+       
+       builder.Services.AddScoped<IFirmService, FirmService>();
        
        builder.Services.AddDbContext<AppDbContext>(options =>
            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
