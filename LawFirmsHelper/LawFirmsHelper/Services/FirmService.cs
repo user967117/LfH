@@ -14,10 +14,18 @@ public class FirmService : IFirmService
         _dbContext = dbContext;
         _userContextService = userContextService;
     }
+    
 
     public async Task<Firm> CreateAsync(CreateFirmRequest request,
         CancellationToken cancellationToken = default)
     {
+        var firmExists = await _dbContext.Firm.AnyAsync(cancellationToken);
+
+        if (firmExists)
+        {
+            throw new InvalidOperationException($"Firm {request.Name} already exist"); 
+        }
+        
         var context = _userContextService.GetContext();
         var userId = context.UserId;
 
