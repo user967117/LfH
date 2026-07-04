@@ -5,16 +5,48 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 namespace LawFirmsHelper.Extentions;
+using Microsoft.OpenApi.Models;
 
 public static class DependencyInjectionExtentions
 {
     public static WebApplicationBuilder AddServices(this WebApplicationBuilder builder)
     {
        builder.Services.AddEndpointsApiExplorer();
-       builder.Services.AddSwaggerGen(); 
+       builder.Services.AddSwaggerGen(options =>
+       {
+           options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+           {
+               Name = "Authorization",
+               Type = SecuritySchemeType.Http,
+               Scheme = "Bearer",
+               BearerFormat = "JWT",
+               In = ParameterLocation.Header,
+               Description = "Jwt token"
+           });
+           
+           options.AddSecurityRequirement(new OpenApiSecurityRequirement
+           {
+               {
+                   new OpenApiSecurityScheme
+                   {
+                       Reference = new OpenApiReference
+                       {
+                           Type = ReferenceType.SecurityScheme,
+                           Id = "Bearer"
+                       }
+                   },
+                   Array.Empty<string>()
+               }
+           });
+       });
        builder.Services.AddScoped<IJwtService, JwtService>();
        builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
        builder.Services.AddAuthorization();
+       
+       builder.Services.AddHttpContextAccessor();
+       builder.Services.AddScoped<IUserContextService, UserContextService>();
+       
+       builder.Services.AddScoped<IFirmService, FirmService>();
        
        builder.Services.AddDbContext<AppDbContext>(options =>
            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));

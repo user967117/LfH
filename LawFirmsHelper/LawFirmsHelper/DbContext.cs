@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using LawFirmsHelper.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,4 +11,6 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     {
         
     }
+    
+    public DbSet<Firm> Firm { get; set; }
 }
