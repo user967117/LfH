@@ -13,4 +13,6 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     }
     
     public DbSet<Firm> Firm { get; set; }
+    
+    public DbSet<Agent> Agents { get; set; }
 }
