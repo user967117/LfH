@@ -1,3 +1,4 @@
+using LawFirmsHelper.Extentions;
 using LawFirmsHelper.Models;
 using LawFirmsHelper.Repositories;
 using LawFirmsHelper.Requests;
@@ -46,13 +47,7 @@ public class AgentService : IAgentService
     public async Task<List<AgentResponse>> GetAllByFirmIdAsync(Guid firmId, CancellationToken cancellationToken = default)
     {
         var agents = await _agentRepository.GetWhereAsync(a => a.FirmId == firmId, cancellationToken);
-        
-        return agents.Select(a => new AgentResponse
-        {
-            Id = a.Id,
-            Name = a.Name,
-            Status = a.Status,
-            FirmId = a.FirmId
-        }).ToList();
+
+        return agents.ToResponse();
     }
 }

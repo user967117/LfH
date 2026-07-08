@@ -8,7 +8,7 @@ namespace LawFirmsHelper.Repositories
     {
         private readonly AppDbContext _context;
         private readonly DbSet<T> _dbSet;
-
+        
         public Repository(AppDbContext context)
         {
             _context = context;
