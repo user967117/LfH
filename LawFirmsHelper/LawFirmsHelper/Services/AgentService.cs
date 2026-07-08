@@ -1,4 +1,5 @@
 using LawFirmsHelper.Models;
+using LawFirmsHelper.Repositories;
 using LawFirmsHelper.Requests;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,15 +7,17 @@ namespace LawFirmsHelper.Services;
 
 public class AgentService : IAgentService
 {
-    private readonly AppDbContext _dbContext;
-    public AgentService(AppDbContext context)
+    private readonly IRepository<Agent> _agentRepository;
+    private readonly IRepository<Firm> _firmRepository;
+    public AgentService(IRepository<Agent> agentRepository, IRepository<Firm> firmRepository)
     {
-        _dbContext = context;
+        _agentRepository = agentRepository;
+        _firmRepository = firmRepository;
     }
 
-    public async Task<Agent> CreateAsync(CreateAgentRequest request, CancellationToken cancellationToken = default)
+    public async Task<AgentResponse> CreateAsync(CreateAgentRequest request, CancellationToken cancellationToken = default)
     {
-        var firmExist = await _dbContext.Firm.AnyAsync(f => f.Id == request.FirmId, cancellationToken);
+        var firmExist = await _firmRepository.AnyAsync(f => f.Id == request.FirmId, cancellationToken);
 
         if (!firmExist)
         {
@@ -25,17 +28,31 @@ public class AgentService : IAgentService
         {
             Name = request.Name,
             FirmId = request.FirmId,
-            IsActive = true
+            Status = AgentStatus.Active
         };
         
-        await _dbContext.Agents.AddAsync(agent, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _agentRepository.AddAsync(agent, cancellationToken);
+        await _agentRepository.SaveChangesAsync(cancellationToken);
 
-        return agent;
+        return new AgentResponse
+        {
+            Id = agent.Id,
+            Name = agent.Name,
+            Status = agent.Status,
+            FirmId = agent.FirmId
+        };
     }
 
-    public async Task<List<Agent>> GetAllByFirmIdAsync(Guid firmId, CancellationToken cancellationToken = default)
+    public async Task<List<AgentResponse>> GetAllByFirmIdAsync(Guid firmId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Agents.Where(f => f.FirmId == firmId).ToListAsync(cancellationToken);   
+        var agents = await _agentRepository.GetWhereAsync(a => a.FirmId == firmId, cancellationToken);
+        
+        return agents.Select(a => new AgentResponse
+        {
+            Id = a.Id,
+            Name = a.Name,
+            Status = a.Status,
+            FirmId = a.FirmId
+        }).ToList();
     }
 }

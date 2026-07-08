@@ -9,7 +9,7 @@ using RegisterRequest = Microsoft.AspNetCore.Identity.Data.RegisterRequest;
 
 namespace LawFirmsHelper.Extentions;
 
-public static class EndpointExtentions
+public static class Extentions
 {
     public static WebApplication UseEndpointExtensions(this WebApplication app)
     {
@@ -40,7 +40,7 @@ public static class EndpointExtentions
                 return Results.Ok(agent);
             });
 
-        app.MapGet("/api/agents/firm/{firmId: guid}", async (Guid firmId, IAgentService agentService, CancellationToken cancellationToken) =>
+        app.MapGet("/api/firms/{firmId}/agents", async (Guid firmId, IAgentService agentService, CancellationToken cancellationToken) =>
         {
             var agents = await agentService.GetAllByFirmIdAsync(firmId, cancellationToken);
             return Results.Ok(agents);
