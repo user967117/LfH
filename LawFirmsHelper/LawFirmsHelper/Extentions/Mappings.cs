@@ -21,7 +21,7 @@ public static class AgentMappingesponse
         };
     }
 
-    public static List<AgentResponse> ToResponse(this List<Agent> agents)
+    public static List<AgentResponse> ToResponse(this IEnumerable<Agent> agents)
     {
         if (agents == null)
         {
