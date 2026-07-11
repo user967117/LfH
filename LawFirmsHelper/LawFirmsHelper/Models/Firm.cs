@@ -10,4 +10,6 @@ public class Firm
     
     public IdentityUser Owner { get; set; }
     public DateTime CreatedAt { get; set; }
+    
+    public ICollection<Agent> Agents { get; set; } = new List<Agent>();
 }

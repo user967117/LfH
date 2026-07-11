@@ -1,4 +1,5 @@
 using System.Text;
+using LawFirmsHelper.Repositories; 
 using LawFirmsHelper.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -47,6 +48,9 @@ public static class DependencyInjectionExtentions
        builder.Services.AddScoped<IUserContextService, UserContextService>();
        
        builder.Services.AddScoped<IFirmService, FirmService>();
+       builder.Services.AddScoped<IAgentService, AgentService>();
+       
+       builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
        
        builder.Services.AddDbContext<AppDbContext>(options =>
            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
