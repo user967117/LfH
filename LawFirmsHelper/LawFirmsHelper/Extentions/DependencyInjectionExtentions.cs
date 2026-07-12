@@ -55,6 +55,8 @@ public static class DependencyInjectionExtentions
        builder.Services.AddDbContext<AppDbContext>(options =>
            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
        
+       builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+       
        builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
        {
            options.Password.RequireDigit = true;

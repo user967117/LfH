@@ -3,6 +3,7 @@ using System;
 using LawFirmsHelper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LawFirmsHelper.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260711131423_AddSubscriptions")]
+    partial class AddSubscriptions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,7 +68,7 @@ namespace LawFirmsHelper.Migrations
                     b.Property<DateTime>("SubscriptionEndsAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("SubscriptionPlanId")
+                    b.Property<int>("SubscriptionPlanId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -85,7 +88,7 @@ namespace LawFirmsHelper.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("MaxLeads")
+                    b.Property<int>("MaxLeeds")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -97,30 +100,7 @@ namespace LawFirmsHelper.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SubscriptionPlans");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            MaxLeads = 10,
-                            Name = "Free",
-                            Price = 0m
-                        },
-                        new
-                        {
-                            Id = 2,
-                            MaxLeads = 100,
-                            Name = "Pro",
-                            Price = 49.99m
-                        },
-                        new
-                        {
-                            Id = 3,
-                            MaxLeads = 9999,
-                            Name = "Enterprise",
-                            Price = 199.99m
-                        });
+                    b.ToTable("SubscriptionPlan");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -338,7 +318,9 @@ namespace LawFirmsHelper.Migrations
 
                     b.HasOne("LawFirmsHelper.Models.SubscriptionPlan", "SubscriptionPlan")
                         .WithMany()
-                        .HasForeignKey("SubscriptionPlanId");
+                        .HasForeignKey("SubscriptionPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Owner");
 
