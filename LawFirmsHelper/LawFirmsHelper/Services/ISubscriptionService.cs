@@ -4,5 +4,5 @@ namespace LawFirmsHelper.Services;
 
 public interface ISubscriptionService
 {
-    Task<bool> UpdateSubscriptionAsync(Guid firmId, string ownerId, UpdateSubscriptionRequest request, CancellationToken cancellationToken);
+    Task<bool> UpdateSubscriptionAsync(UpdateSubscriptionRequest request, CancellationToken cancellationToken = default);
 }

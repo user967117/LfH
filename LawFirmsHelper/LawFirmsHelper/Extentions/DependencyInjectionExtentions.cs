@@ -56,7 +56,7 @@ public static class DependencyInjectionExtentions
            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
        
        builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
-       
+       builder.Services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();
        builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
        {
            options.Password.RequireDigit = true;

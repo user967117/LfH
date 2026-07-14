@@ -54,7 +54,10 @@ public static class Extentions
             if (string.IsNullOrEmpty(userId))
                 return Results.BadRequest();
             
-            var succes = await subService.UpdateSubscriptionAsync(firmId, userId, request, cancellationToken);
+            request.FirmId = firmId;
+            request.OwnerId = userId;
+            
+            var succes = await subService.UpdateSubscriptionAsync(request, cancellationToken);
             return succes ? Results.Ok() : Results.BadRequest();
         }).RequireAuthorization();
         
