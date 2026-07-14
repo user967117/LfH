@@ -16,4 +16,5 @@ public class Firm
     public DateTime SubscriptionEndsAt { get; set; }
     
     public ICollection<Agent> Agents { get; set; } = new List<Agent>();
+    public ICollection<FirmSubscription> Subscriptions { get; set; } = new List<FirmSubscription>();
 }

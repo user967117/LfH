@@ -6,38 +6,40 @@ namespace LawFirmsHelper.Services;
 
 public class SubscriptionService : ISubscriptionService
 {
-    private readonly IRepository<SubscriptionPlan> _subscriptionRepository;
+    private readonly IRepository<SubscriptionPlan> _planRepository;
     private readonly IRepository<Firm> _firmRepository;
+    private readonly IRepository<FirmSubscription> _subscriptionRepository;
     
-    public SubscriptionService(IRepository<SubscriptionPlan> subscriptionRepository, IRepository<Firm> firmRepository)
+    
+    public SubscriptionService(IRepository<SubscriptionPlan> planRepository, IRepository<Firm> firmRepository, IRepository<FirmSubscription> subscriptionRepository)
     {
-        _subscriptionRepository = subscriptionRepository;
+        _planRepository = planRepository;
         _firmRepository = firmRepository;
+        _subscriptionRepository = subscriptionRepository;
     }
 
-    public async Task<bool> UpdateSubscriptionAsync(Guid firmId, string ownerId, UpdateSubscriptionRequest request,
+    public async Task<bool> UpdateSubscriptionAsync(UpdateSubscriptionRequest request,
         CancellationToken cancellationToken)
     {
-        var firms = await _firmRepository.GetWhereAsync(f => f.Id == firmId && f.OwnerId == ownerId, cancellationToken);
-        
+        var planExists = await _planRepository.AnyAsync(p => p.Id == request.PlanId, cancellationToken);
+        if (!planExists) return false;
+
+        var firms = await _firmRepository.GetWhereAsync(f => f.Id == request.FirmId && f.OwnerId == request.OwnerId, cancellationToken);
         var firm = firms.FirstOrDefault();
-
-        if (firm == null)
-        {
-            return false;
-        }
-
-        var planExist = await _subscriptionRepository.AnyAsync(p => p.Id == request.PlanId, cancellationToken);
-
-        if (!planExist)
-        {
-            return false;
-        }
+        if (firm == null) return false;
         
-        firm.SubscriptionPlanId = request.PlanId;
-        firm.SubscriptionEndsAt = DateTime.UtcNow.AddDays(30);
+        var newSubscription = new FirmSubscription
+        {
+            FirmId = request.FirmId,
+            SubscriptionPlanId = request.PlanId,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.AddDays(30),
+            IsActive = true
+        };
         
-        await _firmRepository.SaveChangesAsync(cancellationToken);
+        await _subscriptionRepository.AddAsync(newSubscription, cancellationToken);
+        await _subscriptionRepository.SaveChangesAsync(cancellationToken);
+        
         return true;
     }
     

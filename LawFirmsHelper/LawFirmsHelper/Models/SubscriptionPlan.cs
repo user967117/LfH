@@ -7,4 +7,5 @@ public class SubscriptionPlan
     public decimal Price { get; set; }
     
     public int MaxLeads { get; set; }
+    
 }
