@@ -16,8 +16,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     
     public DbSet<Agent> Agents { get; set; }
     
-    public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
     
-    public DbSet<FirmSubscription> FirmSubscriptions { get; set; }
     
 }

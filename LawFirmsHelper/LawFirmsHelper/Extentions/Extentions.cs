@@ -48,16 +48,22 @@ public static class Extentions
 
 
         app.MapPut("api/firms/{firmId:guid}/subscription", async (Guid firmId, UpdateSubscriptionRequest request,
-            ClaimsPrincipal user, ISubscriptionService subService, CancellationToken cancellationToken) =>
+            IUserContextService userContextService, ISubscriptionService subService, CancellationToken cancellationToken) =>
         {
-            var userId = user.FindFirstValue(ClaimConstants.Id);
+            var userContext = userContextService.GetContext();
+            var userId = userContext.UserId;
+            
             if (string.IsNullOrEmpty(userId))
                 return Results.BadRequest();
+
+            var command = new UpdateSubscriptionCommand
+            {
+                FirmId = firmId,
+                OwnerId = userId,
+                PlanId = request.PlanId,
+            };
             
-            request.FirmId = firmId;
-            request.OwnerId = userId;
-            
-            var succes = await subService.UpdateSubscriptionAsync(request, cancellationToken);
+            var succes = await subService.AddSubscriptionAsync(command, cancellationToken);
             return succes ? Results.Ok() : Results.BadRequest();
         }).RequireAuthorization();
         
