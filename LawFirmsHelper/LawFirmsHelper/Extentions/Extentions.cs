@@ -45,6 +45,24 @@ public static class Extentions
             var agents = await agentService.GetAllByFirmIdAsync(firmId, cancellationToken);
             return Results.Ok(agents);
         });
+
+
+        app.MapPut("api/firms/{firmId:guid}/subscription", async (Guid firmId, UpdateSubscriptionRequest request,
+            IUserContextService userContextService, ISubscriptionService subService, CancellationToken cancellationToken) =>
+        {
+            var userContext = userContextService.GetContext();
+            var userId = userContext.UserId;
+
+            var command = new AddOrUpdateSubscriptionCommand
+            {
+                FirmId = firmId,
+                OwnerId = userId,
+                PlanId = request.PlanId,
+            };
+            
+            var success = await subService.AddOrUpdateAsync(command, cancellationToken);
+            return success ? Results.Ok() : Results.BadRequest();
+        }).RequireAuthorization();
         
         return app;
     }

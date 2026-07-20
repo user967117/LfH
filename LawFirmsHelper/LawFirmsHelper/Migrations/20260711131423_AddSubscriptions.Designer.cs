@@ -3,6 +3,7 @@ using System;
 using LawFirmsHelper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LawFirmsHelper.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260711131423_AddSubscriptions")]
+    partial class AddSubscriptions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,45 +65,42 @@ namespace LawFirmsHelper.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("SubscriptionEndsAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("SubscriptionPlanId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
 
+                    b.HasIndex("SubscriptionPlanId");
+
                     b.ToTable("Firm");
                 });
 
-            modelBuilder.Entity("LawFirmsHelper.Models.Subscription", b =>
+            modelBuilder.Entity("LawFirmsHelper.Models.SubscriptionPlan", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("FirmId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("MaxLeads")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Plan")
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MaxLeeds")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("FirmId");
-
-                    b.ToTable("Subscriptions");
+                    b.ToTable("SubscriptionPlan");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -316,18 +316,15 @@ namespace LawFirmsHelper.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("LawFirmsHelper.Models.Subscription", b =>
-                {
-                    b.HasOne("LawFirmsHelper.Models.Firm", "Firm")
-                        .WithMany("Subscriptions")
-                        .HasForeignKey("FirmId")
+                    b.HasOne("LawFirmsHelper.Models.SubscriptionPlan", "SubscriptionPlan")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Firm");
+                    b.Navigation("Owner");
+
+                    b.Navigation("SubscriptionPlan");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -384,8 +381,6 @@ namespace LawFirmsHelper.Migrations
             modelBuilder.Entity("LawFirmsHelper.Models.Firm", b =>
                 {
                     b.Navigation("Agents");
-
-                    b.Navigation("Subscriptions");
                 });
 #pragma warning restore 612, 618
         }
