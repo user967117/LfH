@@ -1,6 +1,6 @@
 namespace LawFirmsHelper.Services;
 
-public class UpdateSubscriptionCommand
+public class AddOrUpdateSubscriptionCommand
 {
     public Guid FirmId { get; set; }
     public string OwnerId { get; set; }

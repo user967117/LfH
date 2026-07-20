@@ -52,19 +52,16 @@ public static class Extentions
         {
             var userContext = userContextService.GetContext();
             var userId = userContext.UserId;
-            
-            if (string.IsNullOrEmpty(userId))
-                return Results.BadRequest();
 
-            var command = new UpdateSubscriptionCommand
+            var command = new AddOrUpdateSubscriptionCommand
             {
                 FirmId = firmId,
                 OwnerId = userId,
                 PlanId = request.PlanId,
             };
             
-            var succes = await subService.AddSubscriptionAsync(command, cancellationToken);
-            return succes ? Results.Ok() : Results.BadRequest();
+            var success = await subService.AddOrUpdateAsync(command, cancellationToken);
+            return success ? Results.Ok() : Results.BadRequest();
         }).RequireAuthorization();
         
         return app;

@@ -16,7 +16,7 @@ public class SubscriptionService : ISubscriptionService
         _subscriptionRepository = subscriptionRepository;
     }
     
-    public async Task<bool> AddSubscriptionAsync(UpdateSubscriptionCommand command,
+    public async Task<bool> AddOrUpdateAsync(AddOrUpdateSubscriptionCommand command,
         CancellationToken cancellationToken)
     {
         if (!Enum.IsDefined(typeof(PlanType), command.PlanId))
@@ -30,14 +30,13 @@ public class SubscriptionService : ISubscriptionService
         
         var activeSubscriptions = await _subscriptionRepository.GetWhereAsync(s => s.FirmId == firm.Id && s.Status == SubscriptionStatus.Active, cancellationToken);
         var currentSubscription = activeSubscriptions.FirstOrDefault();
-
+        
+        if (currentSubscription?.Plan == (PlanType)command.PlanId)
+        {
+                return false;
+        }
         if (currentSubscription != null)
         {
-            if (currentSubscription.Plan == (PlanType)command.PlanId)
-            {
-                return false;
-            }
-            
             currentSubscription.Status = SubscriptionStatus.Canceled;
         }
         
