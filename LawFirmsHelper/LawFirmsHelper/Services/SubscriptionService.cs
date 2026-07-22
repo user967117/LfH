@@ -20,14 +20,12 @@ public class SubscriptionService : ISubscriptionService
     public async Task<bool> AddOrUpdateAsync(AddOrUpdateSubscriptionCommand command,
         CancellationToken cancellationToken)
     {
-        var planExists = await _planRepository.GetWhereAsync(p => p.Id == command.PlanId, cancellationToken);
-
-        var firms = await _firmRepository.GetWhereAsync(f => f.Id == command.FirmId && f.OwnerId == command.OwnerId, cancellationToken);
+        var firms = await _firmRepository.GetWhereAsync(f => f.Id == command.FirmId && f.OwnerId == command.OwnerId, cancellationToken,
+            f => f.Subscription);
         var firm = firms.FirstOrDefault();
         if (firm == null) return false;
         
-        var subscriptions = await _subscriptionRepository.GetWhereAsync(s => s.FirmId == command.FirmId, cancellationToken);
-        var currentSubscription = subscriptions.FirstOrDefault();
+        var currentSubscription = firm.Subscription;
         
         if (currentSubscription?.PlanId == command.PlanId)
         {
@@ -37,7 +35,7 @@ public class SubscriptionService : ISubscriptionService
         {
             currentSubscription.PlanId = command.PlanId;
             currentSubscription.CreatedAt = DateTime.UtcNow;
-            currentSubscription.ExpiresAt = DateTime.UtcNow.AddDays(30);
+            currentSubscription.ExpiresAt = DateTime.UtcNow.AddMonths(1);
             currentSubscription.Status = SubscriptionStatus.Active;
         }
 
@@ -48,7 +46,7 @@ public class SubscriptionService : ISubscriptionService
                 FirmId = command.FirmId,
                 PlanId = command.PlanId,
                 CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddDays(30),
+                ExpiresAt = DateTime.UtcNow.AddMonths(1),
                 Status = SubscriptionStatus.Active
             };
             await _subscriptionRepository.AddAsync(newSubscription, cancellationToken);

@@ -30,8 +30,16 @@ namespace LawFirmsHelper.Repositories
             await _context.SaveChangesAsync(cancellationToken);
         }
         
-        public async Task<List<T>> GetWhereAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+        public async Task<List<T>> GetWhereAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default,  params Expression<Func<T, object>>[] includes)
         {
+            IQueryable<T> query = _dbSet;
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
             return await _dbSet.Where(predicate).ToListAsync(cancellationToken);
         }
     }
