@@ -1,6 +1,7 @@
 using LawFirmsHelper.Models;
 using LawFirmsHelper.Repositories;
 using LawFirmsHelper.Requests;
+using Microsoft.EntityFrameworkCore;
 
 namespace LawFirmsHelper.Services;
 
@@ -20,9 +21,8 @@ public class SubscriptionService : ISubscriptionService
     public async Task<bool> AddOrUpdateAsync(AddOrUpdateSubscriptionCommand command,
         CancellationToken cancellationToken)
     {
-        var firms = await _firmRepository.GetWhereAsync(f => f.Id == command.FirmId && f.OwnerId == command.OwnerId, cancellationToken,
-            f => f.Subscription);
-        var firm = firms.FirstOrDefault();
+        var firm = await _firmRepository.GetAll().Include(f=>f.Subscription)
+            .FirstOrDefaultAsync(f => f.Id == command.FirmId && f.OwnerId == command.OwnerId, cancellationToken);
         if (firm == null) return false;
         
         var currentSubscription = firm.Subscription;
