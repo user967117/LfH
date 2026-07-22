@@ -18,5 +18,5 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     
     public DbSet<Subscription> Subscriptions { get; set; }
     
-    
+    public DbSet<Plan> Plans { get; set; }
 }

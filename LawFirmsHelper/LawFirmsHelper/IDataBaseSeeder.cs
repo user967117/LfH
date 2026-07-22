@@ -23,7 +23,16 @@ public class DatabaseSeeder : IDatabaseSeeder
 
     public async Task SeedAsync()
     {
-
-        await Task.CompletedTask;
+        if (!await _context.Plans.AnyAsync())
+        {
+            var plans = new List<Plan>
+            {
+                new Plan {Name = "Free", Price = 0m, MaxLeads = 249},
+                new Plan {Name = "Pro", Price = 49.99m, MaxLeads = 999},
+                new Plan {Name = "Enterprice", Price = 199.99m, MaxLeads = 9999},
+            };
+            await _context.Plans.AddRangeAsync(plans);
+            await _context.SaveChangesAsync();
+        }
     }
 }
