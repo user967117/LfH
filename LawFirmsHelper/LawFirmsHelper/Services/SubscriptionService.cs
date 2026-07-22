@@ -7,11 +7,11 @@ namespace LawFirmsHelper.Services;
 
 public class SubscriptionService : ISubscriptionService
 {
-    private readonly IRepository<Firm> _firmRepository;
+    private readonly IFirmRepository _firmRepository;
     private readonly IRepository<Subscription> _subscriptionRepository;
     private readonly IRepository<Plan> _planRepository;
     
-    public SubscriptionService(IRepository<Firm> firmRepository, IRepository<Subscription> subscriptionRepository, IRepository<Plan> planRepository)
+    public SubscriptionService(IFirmRepository firmRepository, IRepository<Subscription> subscriptionRepository, IRepository<Plan> planRepository)
     {
         _firmRepository = firmRepository;
         _subscriptionRepository = subscriptionRepository;
@@ -21,8 +21,8 @@ public class SubscriptionService : ISubscriptionService
     public async Task<bool> AddOrUpdateAsync(AddOrUpdateSubscriptionCommand command,
         CancellationToken cancellationToken)
     {
-        var firm = await _firmRepository.GetAll().Include(f=>f.Subscription)
-            .FirstOrDefaultAsync(f => f.Id == command.FirmId && f.OwnerId == command.OwnerId, cancellationToken);
+        var firm = await _firmRepository.GetFirmWithSubscriptionAsync(command.FirmId, command.OwnerId, cancellationToken);
+            
         if (firm == null) return false;
         
         var currentSubscription = firm.Subscription;

@@ -34,10 +34,5 @@ namespace LawFirmsHelper.Repositories
         {
             return await _dbSet.Where(predicate).ToListAsync(cancellationToken);
         }
-
-        public IQueryable<T> GetAll()
-        {
-            return _dbSet.AsQueryable();
-        }
     }
 }

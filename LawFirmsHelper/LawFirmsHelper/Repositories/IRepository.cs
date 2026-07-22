@@ -4,7 +4,7 @@ namespace LawFirmsHelper.Repositories;
 
 public interface IRepository<T> where T : class
 {
-    IQueryable<T> GetAll();
+
     Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
     Task AddAsync(T entity, CancellationToken cancellationToken = default);
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
