@@ -1,3 +1,4 @@
+using LawFirmsHelper.Extentions;
 using LawFirmsHelper.Models;
 using LawFirmsHelper.Repositories;
 using LawFirmsHelper.Requests;
@@ -21,7 +22,7 @@ public class SubscriptionService : ISubscriptionService
     public async Task<bool> AddOrUpdateAsync(AddOrUpdateSubscriptionCommand command,
         CancellationToken cancellationToken)
     {
-        var firm = await _firmRepository.GetFirmWithSubscriptionAsync(command.FirmId, command.OwnerId, cancellationToken);
+        var firm = await _firmRepository.GetFirmAsync(command.FirmId, command.OwnerId, cancellationToken);
             
         if (firm == null) return false;
         
@@ -34,21 +35,13 @@ public class SubscriptionService : ISubscriptionService
         if (currentSubscription != null)
         {
             currentSubscription.PlanId = command.PlanId;
-            currentSubscription.CreatedAt = DateTime.UtcNow;
             currentSubscription.ExpiresAt = DateTime.UtcNow.AddMonths(1);
             currentSubscription.Status = SubscriptionStatus.Active;
         }
 
         else
         {
-            var newSubscription = new Subscription
-            {
-                FirmId = command.FirmId,
-                PlanId = command.PlanId,
-                CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddMonths(1),
-                Status = SubscriptionStatus.Active
-            };
+            var newSubscription = command.ToSubscription();
             await _subscriptionRepository.AddAsync(newSubscription, cancellationToken);
         }
         

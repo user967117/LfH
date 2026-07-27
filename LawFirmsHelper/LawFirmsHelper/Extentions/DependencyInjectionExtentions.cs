@@ -1,4 +1,5 @@
 using System.Text;
+using LawFirmsHelper.Interceptors;
 using LawFirmsHelper.Repositories; 
 using LawFirmsHelper.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -44,6 +45,8 @@ public static class DependencyInjectionExtentions
        builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
        builder.Services.AddAuthorization();
        
+      
+       
        builder.Services.AddHttpContextAccessor();
        builder.Services.AddScoped<IUserContextService, UserContextService>();
        
@@ -54,8 +57,14 @@ public static class DependencyInjectionExtentions
        
        builder.Services.AddScoped<IFirmRepository, FirmRepository>();
        
-       builder.Services.AddDbContext<AppDbContext>(options =>
-           options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+       builder.Services.AddSingleton<AuditableEntityInterceptor>();
+       
+       builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
+       {
+           var interceptor = serviceProvider.GetRequiredService<AuditableEntityInterceptor>();
+           options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+               .AddInterceptors(interceptor); 
+       });
        
        builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
        builder.Services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();

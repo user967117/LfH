@@ -1,5 +1,6 @@
 using LawFirmsHelper.Models;
 using LawFirmsHelper.Requests;
+using LawFirmsHelper.Services;
 
 namespace LawFirmsHelper.Extentions;
 
@@ -28,5 +29,16 @@ public static class AgentMappingesponse
             return new List<AgentResponse>();
         }
         return agents.Select(a => a.ToResponse()).ToList();
+    }
+
+    public static Subscription ToSubscription(this AddOrUpdateSubscriptionCommand command)
+    {
+        return new Subscription
+        {
+            FirmId = command.FirmId,
+            PlanId = command.PlanId,
+            ExpiresAt = DateTime.UtcNow.AddMonths(1),
+            Status = SubscriptionStatus.Active
+        };
     }
 }

@@ -2,7 +2,7 @@ using LawFirmsHelper.Services;
 
 namespace LawFirmsHelper.Models;
 
-public class Subscription
+public class Subscription : IAuditableEntity
 {
     public Guid Id { get; set; }
     

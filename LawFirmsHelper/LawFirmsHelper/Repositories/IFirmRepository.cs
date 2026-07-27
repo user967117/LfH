@@ -4,5 +4,5 @@ namespace LawFirmsHelper.Repositories;
 
 public interface IFirmRepository : IRepository<Firm>
 {
-    Task<Firm?> GetFirmWithSubscriptionAsync(Guid firmId, string ownerId, CancellationToken cancellationToken);
+    Task<Firm?> GetFirmAsync(Guid firmId, string ownerId, CancellationToken cancellationToken);
 }

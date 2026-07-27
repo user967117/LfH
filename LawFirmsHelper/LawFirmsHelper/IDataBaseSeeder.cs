@@ -27,9 +27,9 @@ public class DatabaseSeeder : IDatabaseSeeder
         {
             var plans = new List<Plan>
             {
-                new Plan {Name = "Free", Price = 0m, MaxLeads = 249},
-                new Plan {Name = "Pro", Price = 49.99m, MaxLeads = 999},
-                new Plan {Name = "Enterprice", Price = 199.99m, MaxLeads = 9999},
+                new Plan {Name = "Free", Price = 0m, MaxLeads = 249, Currency = "USD"},
+                new Plan {Name = "Pro", Price = 49.99m, MaxLeads = 999, Currency = "USD"},
+                new Plan {Name = "Enterprice", Price = 199.99m, MaxLeads = 9999, Currency = "USD"},
             };
             await _context.Plans.AddRangeAsync(plans);
             await _context.SaveChangesAsync();
