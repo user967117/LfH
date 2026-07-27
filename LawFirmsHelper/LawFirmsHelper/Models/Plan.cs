@@ -7,6 +7,6 @@ public class Plan
     public decimal Price { get; set; }
     public int MaxLeads { get; set; }
     
-    public string Currency { get; set; } = "Usd";
-    
+    public int CurrencyId { get; set; }
+    public Currency Currency { get; set; } = null;
 }

@@ -14,7 +14,7 @@ public class FirmRepository : Repository<Firm>, IFirmRepository
 
     public async Task<Firm?> GetFirmAsync(Guid firmId, string ownerId, CancellationToken cancellationToken)
     {
-        return await _context.Firm.Include(f => f.Subscriptions)
+        return await _context.Firm.Include(f => f.Subscription)
             .FirstOrDefaultAsync(f => f.Id == firmId && f.OwnerId == ownerId, cancellationToken);
     }
 }
