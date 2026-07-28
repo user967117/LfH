@@ -3,6 +3,7 @@ using System;
 using LawFirmsHelper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LawFirmsHelper.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260722131217_UpdateSubscriptionArchitecture")]
+    partial class UpdateSubscriptionArchitecture
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,27 +46,6 @@ namespace LawFirmsHelper.Migrations
                     b.HasIndex("FirmId");
 
                     b.ToTable("Agents");
-                });
-
-            modelBuilder.Entity("LawFirmsHelper.Models.Currency", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Symbol")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Currencies");
                 });
 
             modelBuilder.Entity("LawFirmsHelper.Models.Firm", b =>
@@ -98,9 +80,6 @@ namespace LawFirmsHelper.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CurrencyId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("MaxLeads")
                         .HasColumnType("integer");
 
@@ -112,8 +91,6 @@ namespace LawFirmsHelper.Migrations
                         .HasColumnType("numeric");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CurrencyId");
 
                     b.ToTable("Plans");
                 });
@@ -139,13 +116,9 @@ namespace LawFirmsHelper.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("FirmId")
-                        .IsUnique();
+                    b.HasIndex("FirmId");
 
                     b.HasIndex("PlanId");
 
@@ -368,27 +341,16 @@ namespace LawFirmsHelper.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("LawFirmsHelper.Models.Plan", b =>
-                {
-                    b.HasOne("LawFirmsHelper.Models.Currency", "Currency")
-                        .WithMany("Plans")
-                        .HasForeignKey("CurrencyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Currency");
-                });
-
             modelBuilder.Entity("LawFirmsHelper.Models.Subscription", b =>
                 {
                     b.HasOne("LawFirmsHelper.Models.Firm", "Firm")
-                        .WithOne("Subscription")
-                        .HasForeignKey("LawFirmsHelper.Models.Subscription", "FirmId")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("FirmId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("LawFirmsHelper.Models.Plan", "Plan")
-                        .WithMany()
+                        .WithMany("Subscriptions")
                         .HasForeignKey("PlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -449,16 +411,16 @@ namespace LawFirmsHelper.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LawFirmsHelper.Models.Currency", b =>
-                {
-                    b.Navigation("Plans");
-                });
-
             modelBuilder.Entity("LawFirmsHelper.Models.Firm", b =>
                 {
                     b.Navigation("Agents");
 
-                    b.Navigation("Subscription");
+                    b.Navigation("Subscriptions");
+                });
+
+            modelBuilder.Entity("LawFirmsHelper.Models.Plan", b =>
+                {
+                    b.Navigation("Subscriptions");
                 });
 #pragma warning restore 612, 618
         }

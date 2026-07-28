@@ -18,5 +18,17 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     
     public DbSet<Subscription> Subscriptions { get; set; }
     
+    public DbSet<Currency> Currencies { get; set; }
     
+    public DbSet<Plan> Plans { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.Entity<Firm>().HasOne(f => f.Subscription).WithOne(s => s.Firm)
+            .HasForeignKey<Subscription>(s => s.FirmId);
+        
+        modelBuilder.Entity<Subscription>().HasIndex(s => s.FirmId).IsUnique();
+    }
 }
