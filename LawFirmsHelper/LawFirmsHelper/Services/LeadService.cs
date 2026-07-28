@@ -1,5 +1,6 @@
 using LawFirmsHelper.Extentions;
 using LawFirmsHelper.Models;
+using LawFirmsHelper.Repositories;
 using LawFirmsHelper.Requests;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,17 +8,17 @@ namespace LawFirmsHelper.Services;
 
 public class LeadService : ILeadService
 {
-    private readonly AppDbContext _context;
-    public LeadService(AppDbContext dbContext)
+    private readonly ILeadRepository _leadRepository;
+    private readonly IFirmRepository _firmRepository;
+    public LeadService(ILeadRepository leadRepository, IFirmRepository firmRepository)
     {
-        _context = dbContext;
+        _firmRepository = firmRepository;
+        _leadRepository = leadRepository;
     }
 
     public async Task<LeadResponse> CreateAsync(CreateLeadRequest request, CancellationToken cancellationToken = default)
     {
-        var firm = await _context.Firm.Include(f => f.Subscription)
-            .ThenInclude(s => s.Plan)
-            .Include(f => f.Leads).FirstOrDefaultAsync(f => f.Id == request.FirmId);
+        var firm = await _firmRepository.GetFirmWithLeadsAsync(request.FirmId, cancellationToken);
 
         if (firm == null) 
             throw new ArgumentException($"Firm {request.FirmId} does not exist");
@@ -28,8 +29,8 @@ public class LeadService : ILeadService
 
         var lead = request.ToLead();
         
-        await _context.Leads.AddAsync(lead);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _leadRepository.AddAsync(lead);
+        await _firmRepository.SaveChangesAsync(cancellationToken);
         
         return lead.ToResponse();
     }
