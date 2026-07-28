@@ -6,6 +6,5 @@ public class Currency
     public string Code { get; set; }
     
     public string Symbol { get; set; }
-
-    public ICollection<Plan> Plans { get; set; } = new List<Plan>();
+    
 }
