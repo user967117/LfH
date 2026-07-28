@@ -14,4 +14,5 @@ public class Firm
     public Subscription? Subscription { get; set; }
     
     public ICollection<Agent> Agents { get; set; } = new List<Agent>();
+    public ICollection<Lead> Leads { get; set; } = new List<Lead>();
 }

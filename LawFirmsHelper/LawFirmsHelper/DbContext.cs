@@ -20,6 +20,8 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     
     public DbSet<Currency> Currencies { get; set; }
     
+    public DbSet<Lead> Leads { get; set; }
+    
     public DbSet<Plan> Plans { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

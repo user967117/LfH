@@ -52,6 +52,7 @@ public static class DependencyInjectionExtentions
        
        builder.Services.AddScoped<IFirmService, FirmService>();
        builder.Services.AddScoped<IAgentService, AgentService>();
+       builder.Services.AddScoped<ILeadService, LeadService>();
        
        builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
        
