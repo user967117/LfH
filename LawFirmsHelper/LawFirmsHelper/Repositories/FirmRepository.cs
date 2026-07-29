@@ -23,7 +23,6 @@ public class FirmRepository : Repository<Firm>, IFirmRepository
         return await _context.Firm
             .Include(f => f.Subscription)
             .ThenInclude(s => s.Plan)
-            .Include(f => f.Leads) // Завантажуємо лідів, щоб порахувати їх кількість
             .Include(f => f.Leads) 
             .FirstOrDefaultAsync(f => f.Id == firmId, cancellationToken);
     }
