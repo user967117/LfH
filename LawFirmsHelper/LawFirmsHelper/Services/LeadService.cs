@@ -8,7 +8,6 @@ namespace LawFirmsHelper.Services;
 
 public class LeadService : ILeadService
 {
-    private readonly AppDbContext _dbContext;
     private readonly ILeadRepository _leadRepository;
     private readonly IFirmRepository _firmRepository;
     public LeadService(ILeadRepository leadRepository, IFirmRepository firmRepository)
@@ -32,7 +31,7 @@ public class LeadService : ILeadService
         var lead = request.ToLead();
         
         await _leadRepository.AddAsync(lead);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _leadRepository.SaveChangesAsync(cancellationToken);
         
         return lead.ToResponse();
     }

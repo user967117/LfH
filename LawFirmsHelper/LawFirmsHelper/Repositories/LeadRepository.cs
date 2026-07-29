@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LawFirmsHelper.Repositories;
 
-public class LeadRepository
+public class LeadRepository : Repository<Lead>, ILeadRepository
 {
     private readonly AppDbContext _context;
     
-    public LeadRepository(AppDbContext context)
+    public LeadRepository(AppDbContext context) : base(context)
     {
         _context = context;
     }
@@ -23,7 +23,7 @@ public class LeadRepository
         return await _context.Leads.FirstOrDefaultAsync(l => l.Id == id, cancellationToken);
     }
     
-    public async Task<int> GetCountByFirmIdAsync(Guid firmId, CancellationToken cancellationToken = default)
+    public async Task<int> GetCountAsync(Guid firmId, CancellationToken cancellationToken = default)
     {
         return await _context.Leads.CountAsync(l => l.FirmId == firmId, cancellationToken);
     }

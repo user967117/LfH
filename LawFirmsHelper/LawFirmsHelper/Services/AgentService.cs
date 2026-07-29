@@ -8,7 +8,6 @@ namespace LawFirmsHelper.Services;
 
 public class AgentService : IAgentService
 {
-    private readonly AppDbContext _dbContext;
     private readonly IRepository<Agent> _agentRepository;
     private readonly IRepository<Firm> _firmRepository;
     public AgentService(IRepository<Agent> agentRepository, IRepository<Firm> firmRepository)
@@ -34,7 +33,7 @@ public class AgentService : IAgentService
         };
         
         await _agentRepository.AddAsync(agent, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _agentRepository.SaveChangesAsync(cancellationToken);
 
         return new AgentResponse
         {

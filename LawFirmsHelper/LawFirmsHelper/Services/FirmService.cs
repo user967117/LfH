@@ -38,7 +38,7 @@ public class FirmService : IFirmService
         };
         
         await _firmRepository.AddAsync(firm, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _firmRepository.SaveChangesAsync(cancellationToken);
         
         return firm;
     }
