@@ -8,6 +8,7 @@ namespace LawFirmsHelper.Services;
 
 public class LeadService : ILeadService
 {
+    private readonly AppDbContext _dbContext;
     private readonly ILeadRepository _leadRepository;
     private readonly IFirmRepository _firmRepository;
     public LeadService(ILeadRepository leadRepository, IFirmRepository firmRepository)
@@ -23,14 +24,15 @@ public class LeadService : ILeadService
         if (firm == null) 
             throw new ArgumentException($"Firm {request.FirmId} does not exist");
         
+        var currentLeadsCount = await _leadRepository.GetCountAsync(request.FirmId, cancellationToken);
 
-        if (firm.Leads.Count > firm.Subscription.Plan.MaxLeads)
+        if (currentLeadsCount > firm.Subscription.Plan.MaxLeads)
             throw new ArgumentException($"Firm {request.FirmId} does not have enough leads");
 
         var lead = request.ToLead();
         
         await _leadRepository.AddAsync(lead);
-        await _firmRepository.SaveChangesAsync(cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
         
         return lead.ToResponse();
     }

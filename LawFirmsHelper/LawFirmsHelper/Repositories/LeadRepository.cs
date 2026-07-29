@@ -15,12 +15,16 @@ public class LeadRepository
     public async Task<Lead> AddAsync(Lead lead, CancellationToken cancellationToken = default)
     {
         await _context.Leads.AddAsync(lead, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
         return lead;
     }
 
     public async Task<Lead?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Leads.FirstOrDefaultAsync(l => l.Id == id, cancellationToken);
+    }
+    
+    public async Task<int> GetCountByFirmIdAsync(Guid firmId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Leads.CountAsync(l => l.FirmId == firmId, cancellationToken);
     }
 }

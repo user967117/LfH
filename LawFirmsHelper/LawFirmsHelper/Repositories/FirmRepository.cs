@@ -18,12 +18,13 @@ public class FirmRepository : Repository<Firm>, IFirmRepository
             .FirstOrDefaultAsync(f => f.Id == firmId && f.OwnerId == ownerId, cancellationToken);
     }
     
-    public async Task<Firm?> GetFirmWithSubscriptionAndLeadsAsync(Guid firmId, CancellationToken cancellationToken = default)
+    public async Task<Firm?> GetFirmWithLeadsAsync(Guid firmId, CancellationToken cancellationToken = default)
     {
         return await _context.Firm
             .Include(f => f.Subscription)
             .ThenInclude(s => s.Plan)
             .Include(f => f.Leads) // Завантажуємо лідів, щоб порахувати їх кількість
+            .Include(f => f.Leads) 
             .FirstOrDefaultAsync(f => f.Id == firmId, cancellationToken);
     }
 }

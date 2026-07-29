@@ -6,4 +6,6 @@ public interface ILeadRepository
 {
     Task<Lead> AddAsync(Lead lead, CancellationToken cancellationToken = default);
     Task<Lead?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    
+    Task<int> GetCountAsync(Guid id, CancellationToken cancellationToken = default);
 }
