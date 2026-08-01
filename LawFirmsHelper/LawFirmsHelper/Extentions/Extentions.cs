@@ -69,6 +69,12 @@ public static class Extentions
             var lead = await leadService.CreateAsync(request, cancellationToken);
             return Results.Ok(lead);
         });
+
+        app.MapPost("/api/messages", async (CreateMessageRequest request, IMessageService messageService, CancellationToken cancellationToken) =>
+        {
+            var responce = await messageService.CreateAsync(request, cancellationToken);
+            return Results.Ok(responce);
+        });
         
         
         return app;

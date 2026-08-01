@@ -76,4 +76,25 @@ public static class AgentMappingesponse
             CreatedAt = DateTime.UtcNow
         };
     }
+
+    public static Message ToMessage(this CreateMessageRequest request)
+    {
+        return new Message
+        {
+            Id = Guid.NewGuid(),
+            LeadId = request.LeadId,
+            Text = request.Text,
+            CreatedAt = DateTime.UtcNow
+        };
+    }
+
+    public static MessageResponse ToResponse(this Message message)
+    {
+        return new MessageResponse
+        {
+            Id = message.Id,
+            Text = message.Text,
+            CreatedAt = message.CreatedAt,
+        };
+    }
 }

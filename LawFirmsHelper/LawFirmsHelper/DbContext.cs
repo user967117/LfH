@@ -1,4 +1,5 @@
-﻿using LawFirmsHelper.Models;
+﻿using System.Data.Common;
+using LawFirmsHelper.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     
     public DbSet<Lead> Leads { get; set; }
     
+    public DbSet<Message> Messages { get; set; }
     public DbSet<Plan> Plans { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
