@@ -8,11 +8,8 @@ public static class AgentMappingesponse
 {
     public static AgentResponse ToResponse(this Agent agent)
     {
-        if (agent == null)
-        {
-            return null;
-        }
-
+        if (agent == null) return null;
+        
         return new AgentResponse
         {
             Id = agent.Id,
@@ -24,10 +21,8 @@ public static class AgentMappingesponse
 
     public static List<AgentResponse> ToResponse(this IEnumerable<Agent> agents)
     {
-        if (agents == null)
-        {
-            return new List<AgentResponse>();
-        }
+        if (agents == null) return new List<AgentResponse>();
+        
         return agents.Select(a => a.ToResponse()).ToList();
     }
 
@@ -39,6 +34,46 @@ public static class AgentMappingesponse
             PlanId = command.PlanId,
             ExpiresAt = DateTime.UtcNow.AddMonths(1),
             Status = SubscriptionStatus.Active
+        };
+    }
+
+    public static LeadResponse ToResponse(this Lead lead)
+    {
+        if (lead == null) return null;
+
+        return new LeadResponse
+        {
+            Id = lead.Id,
+            Name = lead.Name,
+            Phone = lead.Phone,
+            Email = lead.Email,
+            Description = lead.Description,
+            Status = lead.Status,
+            FirmId = lead.FirmId,
+            CreatedAt = lead.CreatedAt,
+        };
+    }
+
+    public static List<LeadResponse> ToResponse(this IEnumerable<Lead> leads)
+    {
+        if (leads == null) return new List<LeadResponse>();
+
+        return leads.Select(l => l.ToResponse()).ToList();
+    }
+
+    public static Lead ToLead(this CreateLeadRequest request)
+    {
+        if (request == null) return null;
+
+        return new Lead
+        {
+            Name = request.Name,
+            Phone = request.Phone,
+            Email = request.Email,
+            Description = request.Description,
+            FirmId = request.FirmId,
+            Status = LeadStatus.New,
+            CreatedAt = DateTime.UtcNow
         };
     }
 }

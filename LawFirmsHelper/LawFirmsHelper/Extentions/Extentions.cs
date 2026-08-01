@@ -37,7 +37,7 @@ public static class Extentions
             async (CreateAgentRequest request, IAgentService agentService, CancellationToken cancellationToken) =>
             {
                 var agent = await agentService.CreateAsync(request, cancellationToken);
-                return Results.Ok(agent);
+                return Results.Ok(agent); 
             });
 
         app.MapGet("/api/firms/{firmId}/agents", async (Guid firmId, IAgentService agentService, CancellationToken cancellationToken) =>
@@ -63,6 +63,13 @@ public static class Extentions
             var success = await subService.AddOrUpdateAsync(command, cancellationToken);
             return success ? Results.Ok() : Results.BadRequest();
         }).RequireAuthorization();
+        
+        app.MapPost("/api/leads", async (CreateLeadRequest request, ILeadService leadService, CancellationToken cancellationToken) =>
+        {
+            var lead = await leadService.CreateAsync(request, cancellationToken);
+            return Results.Ok(lead);
+        });
+        
         
         return app;
     }

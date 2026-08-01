@@ -1,4 +1,5 @@
 using LawFirmsHelper.Models;
+using LawFirmsHelper.Repositories;
 using LawFirmsHelper.Requests;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,7 @@ namespace LawFirmsHelper.Services;
 public class FirmService : IFirmService
 {
     private readonly AppDbContext _dbContext;
+    private readonly IFirmRepository _firmRepository;
     private readonly IUserContextService _userContextService;
 
     public FirmService(AppDbContext dbContext, IUserContextService userContextService)
@@ -35,8 +37,8 @@ public class FirmService : IFirmService
             OwnerId = userId
         };
         
-        await _dbContext.Firm.AddAsync(firm, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _firmRepository.AddAsync(firm, cancellationToken);
+        await _firmRepository.SaveChangesAsync(cancellationToken);
         
         return firm;
     }
