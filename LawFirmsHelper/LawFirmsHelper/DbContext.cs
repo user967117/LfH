@@ -24,6 +24,8 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Lead> Leads { get; set; }
     
     public DbSet<Message> Messages { get; set; }
+    
+    public DbSet<Chat> Chats { get; set; }
     public DbSet<Plan> Plans { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

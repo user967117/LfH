@@ -75,6 +75,12 @@ public static class Extentions
             var responce = await messageService.CreateAsync(request, cancellationToken);
             return Results.Ok(responce);
         });
+
+        app.MapPost("/api/chats", async (CreateChatRequest request, IChatService chatService, CancellationToken cancellationToken) =>
+        {
+            var response = await chatService.CreateAsync(request, cancellationToken);
+            return Results.Ok(response);
+        });
         
         
         return app;

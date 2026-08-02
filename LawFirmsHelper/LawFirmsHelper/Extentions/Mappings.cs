@@ -82,7 +82,7 @@ public static class AgentMappingesponse
         return new Message
         {
             Id = Guid.NewGuid(),
-            LeadId = request.LeadId,
+            ChatId = request.ChatId,
             Text = request.Text,
             CreatedAt = DateTime.UtcNow
         };
@@ -95,6 +95,28 @@ public static class AgentMappingesponse
             Id = message.Id,
             Text = message.Text,
             CreatedAt = message.CreatedAt,
+        };
+    }
+
+    public static Chat ToChat(this CreateChatRequest request)
+    {
+        return new Chat
+        {
+            Id = Guid.NewGuid(),
+            LeadId = request.LeadId,
+            Title = request.Title,
+            CreatedAt = DateTime.UtcNow
+        };
+    }
+
+    public static ChatResponse ToResponse(this Chat chat)
+    {
+        return new ChatResponse
+        {
+            Id = chat.Id,
+            LeadId = chat.LeadId,
+            Title = chat.Title,
+            CreatedAt = chat.CreatedAt,
         };
     }
 }

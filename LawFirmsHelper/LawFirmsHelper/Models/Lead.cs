@@ -19,5 +19,5 @@ public class Lead : IAuditableEntity
     public DateTime CreatedAt { get; set; } 
     public DateTime? UpdatedAt { get; set; }
     
-    public ICollection<Message> Messages { get; set; } = new List<Message>();
+    public ICollection<Chat> Chats { get; set; } = new List<Chat>();
 }

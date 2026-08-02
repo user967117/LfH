@@ -8,6 +8,6 @@ public class Message
     
     public DateTime CreatedAt { get; set; }
     
-    public Guid LeadId { get; set; }
-    public Lead Lead { get; set; }
+    public Guid ChatId { get; set; }
+    public Chat Chat { get; set; }
 }

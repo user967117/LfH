@@ -12,9 +12,9 @@ public class MessageRepository : Repository<Message>, IMessageRepository
         _context = context;
     }
 
-    public async Task<List<Message>> GetByLeadIdAsync(Guid leadId, CancellationToken cancellationToken = default)
+    public async Task<List<Message>> GetByLeadIdAsync(Guid chatId, CancellationToken cancellationToken = default)
     {
-        return await _context.Messages.Where(m => m.LeadId == leadId)
+        return await _context.Messages.Where(m => m.ChatId == chatId)
             .OrderByDescending(m => m.CreatedAt)
             .ToListAsync(cancellationToken);
     }

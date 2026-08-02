@@ -54,12 +54,14 @@ public static class DependencyInjectionExtentions
        builder.Services.AddScoped<IAgentService, AgentService>();
        builder.Services.AddScoped<ILeadService, LeadService>();
        builder.Services.AddScoped<IMessageService, MessageService>();
+       builder.Services.AddScoped<IChatService, ChatService>();
        
        builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
        
        builder.Services.AddScoped<IFirmRepository, FirmRepository>();
        builder.Services.AddScoped<ILeadRepository, LeadRepository>();
        builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+       builder.Services.AddScoped<IChatRepository, ChatRepository>();
        
        builder.Services.AddSingleton<AuditableEntityInterceptor>();
        

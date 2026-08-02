@@ -7,19 +7,19 @@ namespace LawFirmsHelper.Services;
 public class MessageService : IMessageService
 {
     public readonly IMessageRepository _messageRepository;
-    public readonly ILeadRepository _leadRepository;
+    public readonly IChatRepository _chatRepository;
 
-    public MessageService(IMessageRepository messageRepository, ILeadRepository leadRepository)
+    public MessageService(IMessageRepository messageRepository, IChatRepository chatRepository)
     {
         _messageRepository = messageRepository;
-        _leadRepository = leadRepository;
+        _chatRepository = chatRepository;
     }
 
     public async Task<MessageResponse> CreateAsync(CreateMessageRequest request, CancellationToken cancellationToken)
     {
-        var leadExist = await _leadRepository.GetByIdAsync(request.LeadId, cancellationToken);
+        var chatExist = await _chatRepository.GetByIdAsync(request.ChatId, cancellationToken);
 
-        if (leadExist == null) return null;
+        if (chatExist == null) return null;
 
         var message = request.ToMessage();
 
