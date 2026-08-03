@@ -10,4 +10,7 @@ public class Message
     
     public Guid ChatId { get; set; }
     public Chat Chat { get; set; }
+    
+    public Guid ActorId { get; set; }
+    public Actor Actor { get; set; }
 }

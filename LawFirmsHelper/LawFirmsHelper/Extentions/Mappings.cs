@@ -64,6 +64,7 @@ public static class AgentMappingesponse
     public static Lead ToLead(this CreateLeadRequest request)
     {
         if (request == null) return null;
+        var sharedId = Guid.NewGuid();
 
         return new Lead
         {
@@ -73,7 +74,13 @@ public static class AgentMappingesponse
             Description = request.Description,
             FirmId = request.FirmId,
             Status = LeadStatus.New,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            
+            Actor = new Actor
+            {
+                Id = sharedId,
+                Type = ActorType.Lead
+            }
         };
     }
 

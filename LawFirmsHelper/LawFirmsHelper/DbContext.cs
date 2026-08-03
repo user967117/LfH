@@ -36,5 +36,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
             .HasForeignKey<Subscription>(s => s.FirmId);
         
         modelBuilder.Entity<Subscription>().HasIndex(s => s.FirmId).IsUnique();
+        
+        
     }
 }

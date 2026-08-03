@@ -20,4 +20,6 @@ public class Lead : IAuditableEntity
     public DateTime? UpdatedAt { get; set; }
     
     public ICollection<Chat> Chats { get; set; } = new List<Chat>();
+    
+    public Actor Actor { get; set; }
 }
