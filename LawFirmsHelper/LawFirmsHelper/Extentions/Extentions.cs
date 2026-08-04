@@ -81,6 +81,12 @@ public static class Extentions
             var response = await chatService.CreateAsync(request, cancellationToken);
             return Results.Ok(response);
         });
+
+        app.MapGet("/api/chats/{chatId:guid}/messagges", async (Guid chatId, IChatService chatService, CancellationToken cancellationToken) =>
+        {
+            var history = await chatService.GetChatHistoryAsync(chatId, cancellationToken);
+            return Results.Ok(history);
+        });
         
         
         return app;

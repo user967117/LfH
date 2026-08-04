@@ -126,4 +126,17 @@ public static class AgentMappingesponse
             CreatedAt = chat.CreatedAt,
         };
     }
+
+    public static ChatMessageResponse ToChatHistoryResponse(this Message message)
+    {
+        if (message == null) return null;
+        return new ChatMessageResponse
+        {
+            Id = message.Id,
+            Text = message.Text,
+            CreatedAt = message.CreatedAt,
+            ActorId = message.Actor.Id,
+            ActorType = message.Actor.Type,
+        };
+    }
 }
