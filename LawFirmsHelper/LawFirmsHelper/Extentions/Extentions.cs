@@ -3,6 +3,7 @@ using LawFirmsHelper;
 using LawFirmsHelper.Requests;
 using LawFirmsHelper.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using LoginRequest = Microsoft.AspNetCore.Identity.Data.LoginRequest;
 using RegisterRequest = Microsoft.AspNetCore.Identity.Data.RegisterRequest;
@@ -82,11 +83,24 @@ public static class Extentions
             return Results.Ok(response);
         });
 
-        app.MapGet("/api/chats/{chatId:guid}/messagges", async (Guid chatId, IChatService chatService, CancellationToken cancellationToken) =>
+        app.MapGet("/api/chats/{chatId:guid}/messages", async (
+            Guid chatId, 
+            [FromQuery] int? offset, 
+            [FromQuery] int? limit, 
+            IChatService chatService, 
+            CancellationToken cancellationToken) =>
         {
-            var history = await chatService.GetChatHistoryAsync(chatId, cancellationToken);
+            int actualOffset = offset ?? 0;
+            int actualLimit = limit ?? 50;
+            
+            if (actualLimit <= 0) actualLimit = 50;
+            if (actualLimit > 100) actualLimit = 100; 
+            if (actualOffset < 0) actualOffset = 0;
+
+            var history = await chatService.GetChatHistoryAsync(chatId, actualOffset, actualLimit, cancellationToken);
             return Results.Ok(history);
         });
+        
         
         
         return app;

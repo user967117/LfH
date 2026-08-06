@@ -19,12 +19,14 @@ public class MessageRepository : Repository<Message>, IMessageRepository
             .ToListAsync(cancellationToken);
     }
     
-    public async Task<List<Message>> GetMessageByChatIdAsync(Guid chatId, CancellationToken cancellationToken = default)
+    public async Task<List<Message>> GetMessageByChatIdAsync(Guid chatId, int offset, int limit, CancellationToken cancellationToken = default)
     {
         return await _context.Messages
             .Include(m => m.Actor)
             .Where(m => m.ChatId == chatId)
-            .OrderBy(m => m.CreatedAt) 
+            .OrderByDescending(m => m.CreatedAt) 
+            .Skip(offset)                        
+            .Take(limit) 
             .ToListAsync(cancellationToken);
     }
 }
