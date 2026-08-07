@@ -30,9 +30,9 @@ public class ChatService : IChatService
 
         return chat.ToResponse();
     }
-    public async Task<List<ChatMessageResponse>> GetChatHistoryAsync(Guid chatId, int offset, int limit, CancellationToken cancellationToken = default)
+    public async Task<List<ChatMessageResponse>> GetChatHistoryAsync(Guid chatId, SearchRequest request, CancellationToken cancellationToken = default)
     {
-        var messages = await _messageRepository.GetMessageByChatIdAsync(chatId, offset, limit, cancellationToken);
+        var messages = await _messageRepository.GetMessageByChatIdAsync(chatId, request.Offset, request.Limit, cancellationToken);
         
         return messages.Select(m => m.ToChatHistoryResponse()).ToList();
     }

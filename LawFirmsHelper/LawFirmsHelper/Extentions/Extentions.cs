@@ -85,19 +85,11 @@ public static class Extentions
 
         app.MapGet("/api/chats/{chatId:guid}/messages", async (
             Guid chatId, 
-            [FromQuery] int? offset, 
-            [FromQuery] int? limit, 
+            SearchRequest request,
             IChatService chatService, 
             CancellationToken cancellationToken) =>
         {
-            int actualOffset = offset ?? 0;
-            int actualLimit = limit ?? 50;
-            
-            if (actualLimit <= 0) actualLimit = 50;
-            if (actualLimit > 100) actualLimit = 100; 
-            if (actualOffset < 0) actualOffset = 0;
-
-            var history = await chatService.GetChatHistoryAsync(chatId, actualOffset, actualLimit, cancellationToken);
+            var history = await chatService.GetChatHistoryAsync(chatId, request, cancellationToken);
             return Results.Ok(history);
         });
         
