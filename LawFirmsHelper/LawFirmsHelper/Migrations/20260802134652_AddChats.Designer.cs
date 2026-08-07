@@ -3,6 +3,7 @@ using System;
 using LawFirmsHelper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LawFirmsHelper.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260802134652_AddChats")]
+    partial class AddChats
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,20 +24,6 @@ namespace LawFirmsHelper.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("LawFirmsHelper.Models.Actor", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Actor");
-                });
 
             modelBuilder.Entity("LawFirmsHelper.Models.Agent", b =>
                 {
@@ -133,9 +122,6 @@ namespace LawFirmsHelper.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ActorId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -164,8 +150,6 @@ namespace LawFirmsHelper.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActorId");
-
                     b.HasIndex("FirmId");
 
                     b.ToTable("Leads");
@@ -175,9 +159,6 @@ namespace LawFirmsHelper.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ActorId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ChatId")
@@ -191,8 +172,6 @@ namespace LawFirmsHelper.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ActorId");
 
                     b.HasIndex("ChatId");
 
@@ -490,38 +469,22 @@ namespace LawFirmsHelper.Migrations
 
             modelBuilder.Entity("LawFirmsHelper.Models.Lead", b =>
                 {
-                    b.HasOne("LawFirmsHelper.Models.Actor", "Actor")
-                        .WithMany()
-                        .HasForeignKey("ActorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("LawFirmsHelper.Models.Firm", "Firm")
                         .WithMany("Leads")
                         .HasForeignKey("FirmId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Actor");
-
                     b.Navigation("Firm");
                 });
 
             modelBuilder.Entity("LawFirmsHelper.Models.Message", b =>
                 {
-                    b.HasOne("LawFirmsHelper.Models.Actor", "Actor")
-                        .WithMany()
-                        .HasForeignKey("ActorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("LawFirmsHelper.Models.Chat", "Chat")
                         .WithMany("Messages")
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Actor");
 
                     b.Navigation("Chat");
                 });

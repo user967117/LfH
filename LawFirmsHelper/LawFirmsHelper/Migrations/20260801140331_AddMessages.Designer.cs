@@ -3,6 +3,7 @@ using System;
 using LawFirmsHelper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LawFirmsHelper.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260801140331_AddMessages")]
+    partial class AddMessages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,20 +24,6 @@ namespace LawFirmsHelper.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("LawFirmsHelper.Models.Actor", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Actor");
-                });
 
             modelBuilder.Entity("LawFirmsHelper.Models.Agent", b =>
                 {
@@ -57,29 +46,6 @@ namespace LawFirmsHelper.Migrations
                     b.HasIndex("FirmId");
 
                     b.ToTable("Agents");
-                });
-
-            modelBuilder.Entity("LawFirmsHelper.Models.Chat", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("LeadId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LeadId");
-
-                    b.ToTable("Chats");
                 });
 
             modelBuilder.Entity("LawFirmsHelper.Models.Currency", b =>
@@ -133,9 +99,6 @@ namespace LawFirmsHelper.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ActorId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -164,8 +127,6 @@ namespace LawFirmsHelper.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActorId");
-
                     b.HasIndex("FirmId");
 
                     b.ToTable("Leads");
@@ -177,14 +138,11 @@ namespace LawFirmsHelper.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ActorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ChatId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("LeadId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -192,9 +150,7 @@ namespace LawFirmsHelper.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActorId");
-
-                    b.HasIndex("ChatId");
+                    b.HasIndex("LeadId");
 
                     b.ToTable("Messages");
                 });
@@ -466,17 +422,6 @@ namespace LawFirmsHelper.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LawFirmsHelper.Models.Chat", b =>
-                {
-                    b.HasOne("LawFirmsHelper.Models.Lead", "Lead")
-                        .WithMany("Chats")
-                        .HasForeignKey("LeadId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lead");
-                });
-
             modelBuilder.Entity("LawFirmsHelper.Models.Firm", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Owner")
@@ -490,40 +435,24 @@ namespace LawFirmsHelper.Migrations
 
             modelBuilder.Entity("LawFirmsHelper.Models.Lead", b =>
                 {
-                    b.HasOne("LawFirmsHelper.Models.Actor", "Actor")
-                        .WithMany()
-                        .HasForeignKey("ActorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("LawFirmsHelper.Models.Firm", "Firm")
                         .WithMany("Leads")
                         .HasForeignKey("FirmId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Actor");
-
                     b.Navigation("Firm");
                 });
 
             modelBuilder.Entity("LawFirmsHelper.Models.Message", b =>
                 {
-                    b.HasOne("LawFirmsHelper.Models.Actor", "Actor")
-                        .WithMany()
-                        .HasForeignKey("ActorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LawFirmsHelper.Models.Chat", "Chat")
+                    b.HasOne("LawFirmsHelper.Models.Lead", "Lead")
                         .WithMany("Messages")
-                        .HasForeignKey("ChatId")
+                        .HasForeignKey("LeadId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Actor");
-
-                    b.Navigation("Chat");
+                    b.Navigation("Lead");
                 });
 
             modelBuilder.Entity("LawFirmsHelper.Models.Plan", b =>
@@ -607,11 +536,6 @@ namespace LawFirmsHelper.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LawFirmsHelper.Models.Chat", b =>
-                {
-                    b.Navigation("Messages");
-                });
-
             modelBuilder.Entity("LawFirmsHelper.Models.Firm", b =>
                 {
                     b.Navigation("Agents");
@@ -623,7 +547,7 @@ namespace LawFirmsHelper.Migrations
 
             modelBuilder.Entity("LawFirmsHelper.Models.Lead", b =>
                 {
-                    b.Navigation("Chats");
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

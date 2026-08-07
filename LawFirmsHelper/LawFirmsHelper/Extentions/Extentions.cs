@@ -3,6 +3,7 @@ using LawFirmsHelper;
 using LawFirmsHelper.Requests;
 using LawFirmsHelper.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using LoginRequest = Microsoft.AspNetCore.Identity.Data.LoginRequest;
 using RegisterRequest = Microsoft.AspNetCore.Identity.Data.RegisterRequest;
@@ -69,6 +70,29 @@ public static class Extentions
             var lead = await leadService.CreateAsync(request, cancellationToken);
             return Results.Ok(lead);
         });
+
+        app.MapPost("/api/messages", async (CreateMessageRequest request, IMessageService messageService, CancellationToken cancellationToken) =>
+        {
+            var responce = await messageService.CreateAsync(request, cancellationToken);
+            return Results.Ok(responce);
+        });
+
+        app.MapPost("/api/chats", async (CreateChatRequest request, IChatService chatService, CancellationToken cancellationToken) =>
+        {
+            var response = await chatService.CreateAsync(request, cancellationToken);
+            return Results.Ok(response);
+        });
+
+        app.MapGet("/api/chats/{chatId:guid}/messages", async (
+            Guid chatId, 
+            SearchRequest request,
+            IChatService chatService, 
+            CancellationToken cancellationToken) =>
+        {
+            var history = await chatService.GetChatHistoryAsync(chatId, request, cancellationToken);
+            return Results.Ok(history);
+        });
+        
         
         
         return app;

@@ -64,6 +64,7 @@ public static class AgentMappingesponse
     public static Lead ToLead(this CreateLeadRequest request)
     {
         if (request == null) return null;
+        var sharedId = Guid.NewGuid();
 
         return new Lead
         {
@@ -73,7 +74,69 @@ public static class AgentMappingesponse
             Description = request.Description,
             FirmId = request.FirmId,
             Status = LeadStatus.New,
+            CreatedAt = DateTime.UtcNow,
+            
+            Actor = new Actor
+            {
+                Id = sharedId,
+                Type = ActorType.Lead
+            }
+        };
+    }
+
+    public static Message ToMessage(this CreateMessageRequest request)
+    {
+        return new Message
+        {
+            Id = Guid.NewGuid(),
+            ChatId = request.ChatId,
+            Text = request.Text,
             CreatedAt = DateTime.UtcNow
+        };
+    }
+
+    public static MessageResponse ToResponse(this Message message)
+    {
+        return new MessageResponse
+        {
+            Id = message.Id,
+            Text = message.Text,
+            CreatedAt = message.CreatedAt,
+        };
+    }
+
+    public static Chat ToChat(this CreateChatRequest request)
+    {
+        return new Chat
+        {
+            Id = Guid.NewGuid(),
+            LeadId = request.LeadId,
+            Title = request.Title,
+            CreatedAt = DateTime.UtcNow
+        };
+    }
+
+    public static ChatResponse ToResponse(this Chat chat)
+    {
+        return new ChatResponse
+        {
+            Id = chat.Id,
+            LeadId = chat.LeadId,
+            Title = chat.Title,
+            CreatedAt = chat.CreatedAt,
+        };
+    }
+
+    public static ChatMessageResponse ToChatHistoryResponse(this Message message)
+    {
+        if (message == null) return null;
+        return new ChatMessageResponse
+        {
+            Id = message.Id,
+            Text = message.Text,
+            CreatedAt = message.CreatedAt,
+            ActorId = message.Actor.Id,
+            ActorType = message.Actor.Type,
         };
     }
 }

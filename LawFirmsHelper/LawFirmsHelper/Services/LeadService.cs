@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using LawFirmsHelper.Extentions;
 using LawFirmsHelper.Models;
 using LawFirmsHelper.Repositories;
@@ -26,7 +27,7 @@ public class LeadService : ILeadService
         var currentLeadsCount = await _leadRepository.GetCountAsync(request.FirmId, cancellationToken);
 
         if (currentLeadsCount > firm.Subscription.Plan.MaxLeads)
-            throw new ArgumentException($"Firm {request.FirmId} does not have enough leads");
+            throw new ValidationException($"Firm {request.FirmId} does not have enough leads");
 
         var lead = request.ToLead();
         
