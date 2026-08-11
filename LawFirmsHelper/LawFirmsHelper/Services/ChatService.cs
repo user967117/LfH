@@ -10,10 +10,11 @@ public class ChatService : IChatService
     public readonly ILeadRepository _leadRepository;
     public readonly IMessageRepository _messageRepository;
 
-    public ChatService(IChatRepository chatRepository, ILeadRepository leadRepository)
+    public ChatService(IChatRepository chatRepository, ILeadRepository leadRepository,  IMessageRepository messageRepository)
     {
         _chatRepository = chatRepository;
         _leadRepository = leadRepository;
+        _messageRepository = messageRepository;
     }
 
     public async Task<ChatResponse> CreateAsync(CreateChatRequest request, CancellationToken cancellationToken = default)
