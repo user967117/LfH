@@ -59,4 +59,65 @@ public class ChatServiceTests
         Assert.Equal(fakeActor.Id, responseItem.ActorId);
         Assert.Equal(fakeActor.Type, responseItem.ActorType);
     }
+    
+    [Fact]
+    public async Task CreateAsync_ShouldReturnNull_WhenLeadDoesntExist()
+    {
+        // arrange
+        var leadRepo = Substitute.For<ILeadRepository>();
+        var messageRepo = Substitute.For<IMessageRepository>();
+        var chatRepo = Substitute.For<IChatRepository>();
+        
+        var service = new ChatService(chatRepo, leadRepo, messageRepo);
+
+        var request = new CreateChatRequest
+        {
+            LeadId = Guid.NewGuid()
+        };
+
+        leadRepo.GetByIdAsync(request.LeadId, Arg.Any<CancellationToken>())
+            .Returns((Lead)null);
+        
+        // act
+        var result = await service.CreateAsync(request);
+        
+        // assert
+        Assert.Null(result);
+        
+        await chatRepo.DidNotReceive().AddAsync(Arg.Any<Chat>());
+        await chatRepo.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CreateAsync_ShouldCreateChatAndReturnResponse_WhenLeadExists()
+    {
+        // arrange
+        var leadRepo = Substitute.For<ILeadRepository>();
+        var messageRepo = Substitute.For<IMessageRepository>();
+        var chatRepo = Substitute.For<IChatRepository>();
+        
+        var service = new ChatService(chatRepo, leadRepo, messageRepo);
+
+        var request = new CreateChatRequest
+        {
+            LeadId = Guid.NewGuid()
+        };
+
+        var fakeLead = new Lead
+        {
+            Id = request.LeadId
+        };
+        
+        leadRepo.GetByIdAsync(request.LeadId, Arg.Any<CancellationToken>())
+            .Returns(fakeLead);
+        
+        // act 
+        var result = await service.CreateAsync(request);
+        
+        // assert
+        Assert.NotNull(result);
+        
+        await chatRepo.Received().AddAsync(Arg.Any<Chat>());
+        await chatRepo.Received().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
 }
