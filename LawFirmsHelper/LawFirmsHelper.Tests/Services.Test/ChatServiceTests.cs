@@ -2,10 +2,9 @@
 using LawFirmsHelper.Repositories;
 using LawFirmsHelper.Requests;
 using LawFirmsHelper.Services;
-using Moq;
 using NSubstitute;
 
-namespace TestProject1;
+namespace LawFirmHelper.Tests;
 
 public class ChatServiceTests
 {
