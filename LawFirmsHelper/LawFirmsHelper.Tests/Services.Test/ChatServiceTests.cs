@@ -119,4 +119,7 @@ public class ChatServiceTests
         await chatRepo.Received().AddAsync(Arg.Any<Chat>());
         await chatRepo.Received().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
+
+    
+    
 }
