@@ -72,4 +72,57 @@ public class AgentServiceTests
                 Arg.Any<CancellationToken>());
         });
     }
+
+    [Fact]
+    public async Task GetByFirmId_WhenNoAgentsFound()
+    {
+        // arrange
+        var agentRepo = Substitute.For<IRepository<Agent>>();
+        var firmRepo = Substitute.For<IFirmRepository>();
+        var service = new AgentService(agentRepo, firmRepo);
+        
+        var targetId = Guid.NewGuid();
+
+        agentRepo.AnyAsync(Arg.Any<Expression<Func<Agent, bool>>>(), Arg.Any<CancellationToken>())
+            .Returns(false);
+        
+        // act
+        var result = await service.GetAllByFirmIdAsync(targetId);
+        
+        // assert
+        Assert.NotNull(result);
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task GetByFirmId_WhenAgentsExist()
+    {
+        // arrange
+        var agentRepo = Substitute.For<IRepository<Agent>>();
+        var firmRepo = Substitute.For<IFirmRepository>();
+        var service = new AgentService(agentRepo, firmRepo);
+        
+        var targetId = Guid.NewGuid();
+
+        var fakeAgents = new List<Agent>
+        {
+            new Agent { Id = Guid.NewGuid(), Name = "agent47", FirmId = targetId, Status = AgentStatus.Active },
+            new Agent { Id = Guid.NewGuid(), Name = "agent228", FirmId = targetId, Status = AgentStatus.Active}
+        };
+
+        agentRepo.GetWhereAsync(Arg.Any<Expression<Func<Agent, bool>>>(), Arg.Any<CancellationToken>())
+            .Returns(fakeAgents);
+        
+        // act 
+        var result = await service.GetAllByFirmIdAsync(targetId);
+        
+        // assert
+        Assert.NotNull(result);
+        Assert.Equal(fakeAgents.Count, result.Count);
+        
+        var firstResponse = result.First(r => r.Id == fakeAgents[0].Id);
+        Assert.Equal(fakeAgents[0].FirmId, firstResponse.FirmId);
+        Assert.Equal(fakeAgents[0].Status, firstResponse.Status);
+        Assert.Equal(fakeAgents[0].Name, firstResponse.Name);
+    }
 }
