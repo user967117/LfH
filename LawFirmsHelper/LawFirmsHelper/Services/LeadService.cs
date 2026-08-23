@@ -36,6 +36,4 @@ public class LeadService : ILeadService
         
         return lead.ToResponse();
     }
-    
-    
 }
