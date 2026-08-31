@@ -58,6 +58,32 @@ public class ChatServiceTests
         Assert.Equal(fakeActor.Id, responseItem.ActorId);
         Assert.Equal(fakeActor.Type, responseItem.ActorType);
     }
+
+    [Fact]
+    public async Task GetChatHistoryAsync_ShouldReturnNull_WhenNoMessagesExist()
+    {
+        // arrange
+        var chatRepo = Substitute.For<IChatRepository>();
+        var leadRepo = Substitute.For<ILeadRepository>();
+        var messageRepo = Substitute.For<IMessageRepository>();
+        
+        var service = new ChatService(chatRepo, leadRepo, messageRepo);
+        
+        var chatId = Guid.NewGuid();
+        
+        var searchRequest = new SearchRequest{Offset =  0, Limit = 50};
+
+        messageRepo.GetMessageByChatIdAsync(chatId, searchRequest.Offset, searchRequest.Limit,
+                Arg.Any<CancellationToken>())
+            .Returns(new List<Message>());
+        
+        //act
+        var result = await service.GetChatHistoryAsync(chatId, searchRequest);
+        
+        //assert
+        Assert.NotNull(result);
+        Assert.Empty(result);
+    }
     
     [Fact]
     public async Task CreateAsync_ShouldReturnNull_WhenLeadDoesntExist()
@@ -119,4 +145,7 @@ public class ChatServiceTests
         await chatRepo.Received().AddAsync(Arg.Any<Chat>());
         await chatRepo.Received().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
+
+    
+    
 }

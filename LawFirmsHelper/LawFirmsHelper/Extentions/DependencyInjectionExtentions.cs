@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 namespace LawFirmsHelper.Extentions;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.AI;
+using OpenAI;
 
 public static class DependencyInjectionExtentions
 {
@@ -21,7 +23,7 @@ public static class DependencyInjectionExtentions
                Name = "Authorization",
                Type = SecuritySchemeType.Http,
                Scheme = "Bearer",
-               BearerFormat = "JWT",
+               BearerFormat = "JWT",    
                In = ParameterLocation.Header,
                Description = "Jwt token"
            });
@@ -44,8 +46,14 @@ public static class DependencyInjectionExtentions
        builder.Services.AddScoped<IJwtService, JwtService>();
        builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
        builder.Services.AddAuthorization();
+
+       var modelName = builder.Configuration["AiSettings:ModelName"];
+       var apiKey = builder.Configuration["AiSettings:AiKey"];
+
+       IChatClient chatClient = new OpenAIClient(apiKey).GetChatClient(modelName).AsIChatClient();
+       builder.Services.AddSingleton(chatClient);
        
-      
+       builder.Services.AddScoped<IAiAssistantService, AiAssistantService>();
        
        builder.Services.AddHttpContextAccessor();
        builder.Services.AddScoped<IUserContextService, UserContextService>();

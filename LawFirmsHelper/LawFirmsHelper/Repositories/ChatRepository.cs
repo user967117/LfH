@@ -11,7 +11,13 @@ public class ChatRepository : Repository<Chat>, IChatRepository
         _context = context;
     }
 
-    public async Task<List<Chat>> GetByIdAsync(Guid leadId, CancellationToken cancellationToken)
+    public async Task<Chat?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await _context.Chats
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+    }
+    
+    public async Task<List<Chat>> GetByLeadAsync(Guid leadId, CancellationToken cancellationToken)
     {
         return await _context.Chats.Where(c => c.LeadId == leadId)
             .OrderByDescending(c => c.CreatedAt)
