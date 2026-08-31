@@ -8,36 +8,30 @@ public class AiAssistantService : IAiAssistantService
 {
     private readonly IChatClient _chatClient;
     private readonly ILeadService _leadService;
+    
+    private readonly IConfiguration _configuration;
 
-    public AiAssistantService(IChatClient chatClient, ILeadService leadService)
+    public AiAssistantService(IChatClient chatClient, ILeadService leadService, IConfiguration configuration)
     {
         _chatClient = chatClient;
         _leadService = leadService;
+        _configuration = configuration;
     }
 
     public async Task<string?> GetNextResponseAsync(Guid firmId, List<Message> dbHistory,
         CancellationToken cancellationToken = default)
     {
+        var promptLines = _configuration.GetSection("AiSettings:SystemPrompt").Get<string[]>();
+        
+        var systemPrompt = string.Join("\n", promptLines);
+        
         var chatHistory = new List<ChatMessage>
         {
-            new ChatMessage(ChatRole.System, """
-                Ти асистент юридичної фірми.
-                Твоя мета зібрати інформацію для передачі фірмі:
-                1. Ім'я клієнта
-                2. Електронну пошту
-                3. Номер телефону
-                4. Короткий опис проблеми
-                
-                Став лише одне запитання за раз.
-                Коли збереш усю інформацію, виклич метод CreateLead.
-            """)
+            new ChatMessage(ChatRole.System, systemPrompt)
         };
 
-        foreach (var message in dbHistory)
-        {
-            var role = message.Actor.Type == ActorType.Agent ? ChatRole.Assistant : ChatRole.User;
-            chatHistory.Add(new ChatMessage(role, message.Text));
-        }
+        chatHistory.AddRange(dbHistory.Select(m => new ChatMessage(
+            m.Actor.Type == ActorType.Agent ? ChatRole.Assistant : ChatRole.User, m.Text)));
 
         var options = new ChatOptions
         {
