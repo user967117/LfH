@@ -85,7 +85,7 @@ public static class Extentions
 
         app.MapGet("/api/chats/{chatId:guid}/messages", async (
             Guid chatId, 
-            SearchRequest request,
+            [AsParameters] SearchRequest request,
             IChatService chatService, 
             CancellationToken cancellationToken) =>
         {

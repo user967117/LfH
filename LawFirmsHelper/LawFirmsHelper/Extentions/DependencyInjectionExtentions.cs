@@ -48,7 +48,7 @@ public static class DependencyInjectionExtentions
        builder.Services.AddAuthorization();
 
        var modelName = builder.Configuration["AiSettings:ModelName"];
-       var apiKey = builder.Configuration["AiSettings:AiKey"];
+       var apiKey = builder.Configuration["AiSettings:OpenAIKey"];
 
        IChatClient chatClient = new OpenAIClient(apiKey).GetChatClient(modelName).AsIChatClient();
        builder.Services.AddSingleton(chatClient);
