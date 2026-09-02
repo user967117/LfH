@@ -17,11 +17,13 @@ public class ChatService : IChatService
         _messageRepository = messageRepository;
     }
 
-    public async Task<ChatResponse> CreateAsync(CreateChatRequest request, CancellationToken cancellationToken = default)
+    public async Task<ChatResponse?> CreateAsync(CreateChatRequest request, CancellationToken cancellationToken = default)
     {
-        var leadExist = await _leadRepository.GetByIdAsync(request.LeadId, cancellationToken)!=null;
-
-        if (!leadExist) return null;
+        if (request.LeadId.HasValue)
+        {
+            var leadExist = await _leadRepository.GetByIdAsync(request.LeadId.Value, cancellationToken) != null;
+            if (!leadExist) return null;
+        }
 
         var chat = request.ToChat();
         

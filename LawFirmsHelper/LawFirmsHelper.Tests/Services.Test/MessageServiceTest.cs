@@ -79,7 +79,7 @@ public class MessageServiceTest
             .Returns(fakeLead);
         
         var expectedAiResponse = "Вітаю!";
-        aiService.GetNextResponseAsync(fakeFirmId, Arg.Any<List<Message>>(), cancelationToken)
+        aiService.GetNextResponseAsync(fakeFirmId, Arg.Any<Guid>(),Arg.Any<List<Message>>(), cancelationToken)
             .Returns(expectedAiResponse);
         
         // act
@@ -98,7 +98,7 @@ public class MessageServiceTest
                 leadRepo.GetByIdAsync(fakeLeadId, cancelationToken);
                 messageRepo.GetMessageByChatIdAsync(request.ChatId, 0, 50, cancelationToken);
                 
-                aiService.GetNextResponseAsync(fakeFirmId, Arg.Any<List<Message>>(), cancelationToken);
+                aiService.GetNextResponseAsync(fakeFirmId, Arg.Any<Guid>(), Arg.Any<List<Message>>(), cancelationToken);
                 
                 messageRepo.AddAsync(Arg.Is<Message>(x => x.Text == expectedAiResponse));
                 messageRepo.SaveChangesAsync(cancelationToken);

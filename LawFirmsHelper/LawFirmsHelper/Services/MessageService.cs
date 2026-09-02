@@ -23,21 +23,26 @@ public class MessageService : IMessageService
 
     public async Task<MessageResponse> CreateAsync(CreateMessageRequest request, CancellationToken cancellationToken)
     {
+        
         var chatExist = await _chatRepository.GetByIdAsync(request.ChatId, cancellationToken);
         if (chatExist == null) return null;
 
         var userMessage = request.ToMessage();
+        userMessage.Actor = new Actor { Type = ActorType.Lead };
 
         await _messageRepository.AddAsync(userMessage);
         await _messageRepository.SaveChangesAsync(cancellationToken);
         
-        var lead = await _leadRepository.GetByIdAsync(chatExist.LeadId, cancellationToken);
-        if (lead == null) return null;
+        Lead? lead = null;
+        if (chatExist.LeadId.HasValue)
+        {
+            lead = await _leadRepository.GetByIdAsync(chatExist.LeadId.Value, cancellationToken);
+        }
         
         
         var chatHistory = await _messageRepository.GetMessageByChatIdAsync(request.ChatId, 0, 50, cancellationToken);
         
-        var aiResponseText = await _aiAssistantService.GetNextResponseAsync(lead.FirmId, chatHistory, cancellationToken);
+        var aiResponseText = await _aiAssistantService.GetNextResponseAsync(chatExist.FirmId, request.ChatId, chatHistory , cancellationToken);
 
         var aiMessage = new Message
         {

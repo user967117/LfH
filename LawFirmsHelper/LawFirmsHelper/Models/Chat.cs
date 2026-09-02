@@ -7,7 +7,9 @@ public class Chat
     public string Title { get; set; }
     public DateTime CreatedAt { get; set; }
     
-    public Guid LeadId { get; set; }
+    public Guid FirmId { get; set; }
+    
+    public Guid? LeadId { get; set; }
     public Lead? Lead { get; set; }
     
     public ICollection<Message> Messages { get; set; } = new List<Message>();

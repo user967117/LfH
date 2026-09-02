@@ -1,3 +1,4 @@
+using LawFirmsHelper.Extentions;
 using LawFirmsHelper.Models;
 using LawFirmsHelper.Repositories;
 using LawFirmsHelper.Requests;
@@ -11,17 +12,18 @@ public class FirmService : IFirmService
     private readonly IFirmRepository _firmRepository;
     private readonly IUserContextService _userContextService;
 
-    public FirmService(AppDbContext dbContext, IUserContextService userContextService)
+    public FirmService(AppDbContext dbContext, IUserContextService userContextService, IFirmRepository firmRepository)
     {
         _dbContext = dbContext;
         _userContextService = userContextService;
+        _firmRepository = firmRepository;
     }
     
 
-    public async Task<Firm> CreateAsync(CreateFirmRequest request,
+    public async Task<FirmResponse> CreateAsync(CreateFirmRequest request,
         CancellationToken cancellationToken = default)
     {
-        var firmExists = await _dbContext.Firm.AnyAsync(cancellationToken);
+        var firmExists = await _dbContext.Firm.AnyAsync(f => f.Name == request.Name, cancellationToken);
 
         if (firmExists)
         {
@@ -34,13 +36,24 @@ public class FirmService : IFirmService
         var firm = new Firm
         {
             Name = request.Name,
-            OwnerId = userId
+            OwnerId = userId,
         };
+        
+        var defaultPlan = await _dbContext.Plans.FirstOrDefaultAsync(p => p.Name == "Free", cancellationToken);
+        if (defaultPlan != null)
+        {
+            firm.Subscription = new Subscription
+            {
+                FirmId = firm.Id,
+                PlanId = defaultPlan.Id,
+                CreatedAt = DateTime.UtcNow
+            };
+        }
         
         await _firmRepository.AddAsync(firm, cancellationToken);
         await _firmRepository.SaveChangesAsync(cancellationToken);
         
-        return firm;
+        return firm.ToResponse();
     }
 
     public async Task<List<Firm>> GetAllAsync(CancellationToken cancellationToken = default)

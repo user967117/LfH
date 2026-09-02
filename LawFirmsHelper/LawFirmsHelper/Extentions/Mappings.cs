@@ -6,6 +6,17 @@ namespace LawFirmsHelper.Extentions;
 
 public static class AgentMappingesponse
 {
+    
+    public static FirmResponse ToResponse(this Firm firm)
+    {
+        return new FirmResponse
+        {
+            Id = firm.Id,
+            Name = firm.Name,
+            OwnerId = firm.OwnerId,
+            CreatedAt = firm.CreatedAt
+        };
+    }
     public static AgentResponse ToResponse(this Agent agent)
     {
         if (agent == null) return null;
@@ -109,6 +120,7 @@ public static class AgentMappingesponse
     {
         return new Chat
         {
+            FirmId = request.FirmId,
             Id = Guid.NewGuid(),
             LeadId = request.LeadId,
             Title = request.Title,
