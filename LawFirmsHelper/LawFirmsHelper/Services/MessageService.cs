@@ -41,14 +41,21 @@ public class MessageService : IMessageService
         
         
         var chatHistory = await _messageRepository.GetMessageByChatIdAsync(request.ChatId, 0, 50, cancellationToken);
+
+        var aiRequest = new GetModelResponseRequest
+        {
+            FirmId = chatExist.FirmId,
+            ChatId = request.ChatId,
+            DbHistory = chatHistory
+        };
         
-        var aiResponseText = await _aiAssistantService.GetNextResponseAsync(chatExist.FirmId, request.ChatId, chatHistory , cancellationToken);
+        var aiResponse = await _aiAssistantService.GetNextResponseAsync(aiRequest, cancellationToken);
 
         var aiMessage = new Message
         {
             ChatId = request.ChatId,
-            Text = aiResponseText,
-            Actor = new Actor { Type = ActorType.Agent }
+            Text = aiResponse.Text,
+            Actor = new Actor { Type = ActorType.Agent },
         };
         
         await _messageRepository.AddAsync(aiMessage);

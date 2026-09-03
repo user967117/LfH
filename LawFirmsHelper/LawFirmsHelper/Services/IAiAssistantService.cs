@@ -1,8 +1,9 @@
 using LawFirmsHelper.Models;
+using LawFirmsHelper.Requests;
 
 namespace LawFirmsHelper.Services;
 
 public interface IAiAssistantService
 {
-    Task<string?> GetNextResponseAsync(Guid FirmId, Guid chatId, List<Message> dbHistory, CancellationToken cancellationToken = default);
+    Task<ChatModelResponse> GetNextResponseAsync(GetModelResponseRequest request, CancellationToken cancellationToken = default);
 }

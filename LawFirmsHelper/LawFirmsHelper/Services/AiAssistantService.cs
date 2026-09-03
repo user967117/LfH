@@ -2,6 +2,7 @@ using LawFirmsHelper.Models;
 using LawFirmsHelper.Repositories;
 using LawFirmsHelper.Requests;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Options;
 
 namespace LawFirmsHelper.Services;
 
@@ -10,17 +11,17 @@ public class AiAssistantService : IAiAssistantService
     private readonly IChatClient _chatClient;
     private readonly ILeadService _leadService;
     private readonly IChatRepository _chatRepository;
-    private readonly IConfiguration _configuration;
+    private readonly AiSettings _aiSettings;
 
-    public AiAssistantService(IChatClient chatClient, ILeadService leadService, IChatRepository chatRepository, IConfiguration configuration)
+    public AiAssistantService(IChatClient chatClient, ILeadService leadService, IChatRepository chatRepository, IOptions<AiSettings> aiOptions)
     {
         _chatClient = new ChatClientBuilder(chatClient).UseFunctionInvocation().Build();
         _leadService = leadService;
         _chatRepository = chatRepository;
-        _configuration = configuration;
+        _aiSettings = aiOptions.Value;
     }
     
-    private string CleanModelResponse(string text)
+    private string FormatModelResponse(string text)
     {
         if (string.IsNullOrWhiteSpace(text)) return text;
         
@@ -30,12 +31,12 @@ public class AiAssistantService : IAiAssistantService
             return text.Substring(index + 8).Trim();
         }   
         return text;
-    }
+    } 
 
-    public async Task<string?> GetNextResponseAsync(Guid firmId, Guid chatId, List<Message> dbHistory,
+    public async Task<ChatModelResponse> GetNextResponseAsync(GetModelResponseRequest request,
         CancellationToken cancellationToken = default)
     {
-        var promptLines = _configuration.GetSection("AiSettings:SystemPrompt").Get<string[]>();
+        var promptLines = _aiSettings.SystemPrompt;
         
         var systemPrompt = string.Join("\n", promptLines);
         
@@ -44,7 +45,7 @@ public class AiAssistantService : IAiAssistantService
             new ChatMessage(ChatRole.System, systemPrompt)
         };
 
-        chatHistory.AddRange(dbHistory.Select(m => new ChatMessage(
+        chatHistory.AddRange(request.DbHistory.Select(m => new ChatMessage(
             m.Actor.Type == ActorType.Agent ? ChatRole.Assistant : ChatRole.User, m.Text)));
 
         var createLeadTool = AIFunctionFactory.Create(
@@ -62,10 +63,10 @@ public class AiAssistantService : IAiAssistantService
                     return $"SYSTEM ERROR: Missing required fields: {missingStr}. DO NOT call this function yet. Ask the user for the missing information.";
                 }
                 
-                var existingLead = await _leadService.GetByEmailAsync(firmId, email!, cancellationToken);
+                var existingLead = await _leadService.GetByFirmIdAndEmailAsync(request.FirmId, email!, cancellationToken);
                 if (existingLead != null)
                 {
-                    var currentChat = await _chatRepository.GetByIdAsync(chatId, cancellationToken);
+                    var currentChat = await _chatRepository.GetByIdAsync(request.ChatId, cancellationToken);
                     if (currentChat != null && currentChat.LeadId == null)
                     {
                         currentChat.LeadId = existingLead.Id;
@@ -75,21 +76,21 @@ public class AiAssistantService : IAiAssistantService
                 }
             
 
-                var request = new CreateLeadRequest
+                var createLeadRequest = new CreateLeadRequest
                 {
-                    FirmId = firmId,
+                    FirmId = request.FirmId,
                     Name = name!,
                     Phone = phone!,
                     Email = email!,
                     Description = description!
                 };
 
-                await _leadService.CreateAsync(request, cancellationToken);
+                await _leadService.CreateAsync(createLeadRequest, cancellationToken);
 
-                var newLead = await _leadService.GetByEmailAsync(firmId, email!, cancellationToken);
+                var newLead = await _leadService.GetByFirmIdAndEmailAsync(request.FirmId, email!, cancellationToken);
                 if (newLead != null)
                 {
-                    var currentChat = await _chatRepository.GetByIdAsync(chatId, cancellationToken);
+                    var currentChat = await _chatRepository.GetByIdAsync(request.ChatId, cancellationToken);
                     if (currentChat != null)
                     {
                         currentChat.LeadId = newLead.Id;
@@ -107,6 +108,9 @@ public class AiAssistantService : IAiAssistantService
         };
         
         var response = await _chatClient.GetResponseAsync(chatHistory, options, cancellationToken);
-        return CleanModelResponse(response.Text);
+        return new ChatModelResponse 
+        {
+            Text = FormatModelResponse(response.Text)
+        };
     }
 }

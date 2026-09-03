@@ -53,23 +53,7 @@ public static class DependencyInjectionExtentions
        builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
        builder.Services.AddAuthorization();
 
-       var aiKey = builder.Configuration["AiSettings:OpenAIKey"];
-       var modelName = builder.Configuration["AiSettings:ModelName"];
-       var baseUrl = builder.Configuration["AiSettings:BaseUrl"];
-
-
-       builder.Services.AddChatClient(services =>
-       {
-           var options = new OpenAIClientOptions();
-           if (!string.IsNullOrEmpty(baseUrl))
-           {
-               options.Endpoint = new Uri(baseUrl);
-           }
-
-           return new OpenAIClient(new ApiKeyCredential(aiKey), options)
-               .GetChatClient(modelName)
-               .AsIChatClient();
-       });
+       builder.Services.AddAiChatClient(builder.Configuration);
        
        builder.Services.AddScoped<IAiAssistantService, AiAssistantService>();
        
