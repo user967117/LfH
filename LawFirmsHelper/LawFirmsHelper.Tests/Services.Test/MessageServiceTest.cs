@@ -78,16 +78,18 @@ public class MessageServiceTest
         leadRepo.GetByIdAsync(fakeLeadId, cancelationToken)
             .Returns(fakeLead);
         
-        var expectedAiResponse = "Вітаю!";
-        aiService.GetNextResponseAsync(fakeFirmId, Arg.Any<List<Message>>(), cancelationToken)
-            .Returns(expectedAiResponse);
+        var expectedAiText = "Вітаю!";
+        var fakeAiResponse = new ChatModelResponse { Text = expectedAiText };
+        
+        aiService.GetNextResponseAsync(Arg.Any<GetModelResponseRequest>(), cancelationToken)
+            .Returns(fakeAiResponse);
         
         // act
         var result = await service.CreateAsync(request, cancelationToken);
         
         // assert
         Assert.NotNull(result);
-        Assert.Equal(expectedAiResponse, result.Text);
+        Assert.Equal(expectedAiText, result.Text);
 
         Received.InOrder(() =>
             {
@@ -98,9 +100,9 @@ public class MessageServiceTest
                 leadRepo.GetByIdAsync(fakeLeadId, cancelationToken);
                 messageRepo.GetMessageByChatIdAsync(request.ChatId, 0, 50, cancelationToken);
                 
-                aiService.GetNextResponseAsync(fakeFirmId, Arg.Any<List<Message>>(), cancelationToken);
+                aiService.GetNextResponseAsync(Arg.Any<GetModelResponseRequest>(), cancelationToken);
                 
-                messageRepo.AddAsync(Arg.Is<Message>(x => x.Text == expectedAiResponse));
+                messageRepo.AddAsync(Arg.Is<Message>(x => x.Text == expectedAiText));
                 messageRepo.SaveChangesAsync(cancelationToken);
             });
 

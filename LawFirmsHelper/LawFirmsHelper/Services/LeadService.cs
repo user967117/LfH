@@ -36,4 +36,9 @@ public class LeadService : ILeadService
         
         return lead.ToResponse();
     }
+    
+    public async Task<Lead?> GetByFirmIdAndEmailAsync(Guid firmId, string email, CancellationToken cancellationToken = default)
+    {
+        return await _leadRepository.GetByFirmIdAndEmailAsync(firmId, email, cancellationToken);
+    }
 }

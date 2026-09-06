@@ -1,9 +1,10 @@
 namespace LawFirmsHelper.Requests;
 
-public class ChatResponse
+public class FirmResponse
 {
     public Guid Id { get; set; }
-    public Guid? LeadId { get; set; }
-    public string Title { get; set; }
+    public string Name { get; set; }
+    public string OwnerId { get; set; }
     public DateTime CreatedAt { get; set; }
+    
 }

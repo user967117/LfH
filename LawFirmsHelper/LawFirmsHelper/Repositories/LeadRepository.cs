@@ -27,4 +27,10 @@ public class LeadRepository : Repository<Lead>, ILeadRepository
     {
         return await _context.Leads.CountAsync(l => l.FirmId == firmId, cancellationToken);
     }
+    
+    public async Task<Lead?> GetByFirmIdAndEmailAsync(Guid firmId, string email, CancellationToken cancellationToken = default)
+    {
+        return await _context.Leads
+            .FirstOrDefaultAsync(l => l.FirmId == firmId && l.Email == email, cancellationToken);
+    }
 }

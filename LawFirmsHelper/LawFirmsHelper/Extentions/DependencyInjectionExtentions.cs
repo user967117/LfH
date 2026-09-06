@@ -1,3 +1,4 @@
+using System.ClientModel;
 using System.Text;
 using LawFirmsHelper.Interceptors;
 using LawFirmsHelper.Repositories; 
@@ -43,15 +44,16 @@ public static class DependencyInjectionExtentions
                }
            });
        });
+       
+       builder.Services.AddControllers().AddJsonOptions(options =>
+       {
+           options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+       });
        builder.Services.AddScoped<IJwtService, JwtService>();
        builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
        builder.Services.AddAuthorization();
 
-       var modelName = builder.Configuration["AiSettings:ModelName"];
-       var apiKey = builder.Configuration["AiSettings:AiKey"];
-
-       IChatClient chatClient = new OpenAIClient(apiKey).GetChatClient(modelName).AsIChatClient();
-       builder.Services.AddSingleton(chatClient);
+       builder.Services.AddAiChatClient(builder.Configuration);
        
        builder.Services.AddScoped<IAiAssistantService, AiAssistantService>();
        

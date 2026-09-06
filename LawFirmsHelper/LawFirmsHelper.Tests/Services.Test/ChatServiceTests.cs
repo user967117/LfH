@@ -100,7 +100,7 @@ public class ChatServiceTests
             LeadId = Guid.NewGuid()
         };
 
-        leadRepo.GetByIdAsync(request.LeadId, Arg.Any<CancellationToken>())
+        leadRepo.GetByIdAsync(request.LeadId!.Value, Arg.Any<CancellationToken>())
             .Returns((Lead)null);
         
         // act
@@ -130,10 +130,10 @@ public class ChatServiceTests
 
         var fakeLead = new Lead
         {
-            Id = request.LeadId
+            Id = request.LeadId!.Value
         };
         
-        leadRepo.GetByIdAsync(request.LeadId, Arg.Any<CancellationToken>())
+        leadRepo.GetByIdAsync(request.LeadId!.Value, Arg.Any<CancellationToken>())
             .Returns(fakeLead);
         
         // act 

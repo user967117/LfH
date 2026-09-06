@@ -8,4 +8,6 @@ public interface ILeadRepository : IRepository<Lead>
     Task<Lead?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     
     Task<int> GetCountAsync(Guid id, CancellationToken cancellationToken = default);
+    
+    Task<Lead?> GetByFirmIdAndEmailAsync(Guid firmId, string email, CancellationToken cancellationToken = default);
 }

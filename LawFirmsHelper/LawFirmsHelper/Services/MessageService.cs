@@ -23,27 +23,39 @@ public class MessageService : IMessageService
 
     public async Task<MessageResponse> CreateAsync(CreateMessageRequest request, CancellationToken cancellationToken)
     {
+        
         var chatExist = await _chatRepository.GetByIdAsync(request.ChatId, cancellationToken);
         if (chatExist == null) return null;
 
         var userMessage = request.ToMessage();
+        userMessage.Actor = new Actor { Type = ActorType.Lead };
 
         await _messageRepository.AddAsync(userMessage);
         await _messageRepository.SaveChangesAsync(cancellationToken);
         
-        var lead = await _leadRepository.GetByIdAsync(chatExist.LeadId, cancellationToken);
-        if (lead == null) return null;
+        Lead? lead = null;
+        if (chatExist.LeadId.HasValue)
+        {
+            lead = await _leadRepository.GetByIdAsync(chatExist.LeadId.Value, cancellationToken);
+        }
         
         
         var chatHistory = await _messageRepository.GetMessageByChatIdAsync(request.ChatId, 0, 50, cancellationToken);
+
+        var aiRequest = new GetModelResponseRequest
+        {
+            FirmId = chatExist.FirmId,
+            ChatId = request.ChatId,
+            DbHistory = chatHistory
+        };
         
-        var aiResponseText = await _aiAssistantService.GetNextResponseAsync(lead.FirmId, chatHistory, cancellationToken);
+        var aiResponse = await _aiAssistantService.GetNextResponseAsync(aiRequest, cancellationToken);
 
         var aiMessage = new Message
         {
             ChatId = request.ChatId,
-            Text = aiResponseText,
-            Actor = new Actor { Type = ActorType.Agent }
+            Text = aiResponse.Text,
+            Actor = new Actor { Type = ActorType.Agent },
         };
         
         await _messageRepository.AddAsync(aiMessage);
