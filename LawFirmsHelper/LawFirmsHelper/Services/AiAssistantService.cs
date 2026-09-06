@@ -100,7 +100,7 @@ public class AiAssistantService : IAiAssistantService
                 return "Lead successfully created. Now tell the user that their data is saved.";
             },
             name: "CreateLead",
-            description: "Зберігає інформацію про ліда. ВАЖЛИВО: Викликай ТІЛЬКИ тоді, коли зібрав УСІ 4 параметри (ім'я, телефон, email, опис проблеми). Якщо чогось бракує НЕ викликай інструмент, а напиши користувачу і запитай.");
+            description: "Saves lead information. IMPORTANT: Call this tool ONLY when you have collected ALL 4 required parameters (name, phone, email, problem description). If any information is missing, DO NOT call this tool; instead, ask the user to provide the missing details.");
         
         var options = new ChatOptions
         {
