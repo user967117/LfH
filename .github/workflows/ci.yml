@@ -1,35 +1,54 @@
-name: Build and Push to ACR
+name: Added Azure deployment CD
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  build-and-push:
+  build-and-test:
     runs-on: ubuntu-latest
-
     steps:
     - name: Отримуємо код
       uses: actions/checkout@v4
+    
+    - name: Налаштовуємо .NET 9
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+        
+    - name: Відновлюємо залежності та компілюємо
+      run: dotnet build ./LawFirmsHelper/LawFirmsHelper.csproj
+      
+    - name: Запускаємо xUnit тести
+      run: dotnet test ./LawFirmsHelper/LawFirmsHelper.csproj --no-build --verbosity normal
 
-    - name: Логінимось в Azure Container Registry
+  docker:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Отримуємо код
+      uses: actions/checkout@v4
+      
+    - name: Логінимось в ACR
       uses: azure/docker-login@v1
       with:
         login-server: ${{ secrets.ACR_LOGIN_SERVER }}
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
-
-    - name: Збираємо та пушимо Docker імедж
+        
+    - name: Збираємо та пушимо імедж
       run: |
         if [ -f "LawFirmsHelper/LawFirmsHelper/Dockerfile" ]; then
-          echo "Dockerfile знайдено у внутрішній папці!"
-          docker build -f LawFirmsHelper/LawFirmsHelper/Dockerfile -t ${{ secrets.ACR_LOGIN_SERVER }}/lawfirmshelper:latest ./LawFirmsHelper
+          DOCKERFILE="LawFirmsHelper/LawFirmsHelper/Dockerfile"
         elif [ -f "LawFirmsHelper/Dockerfile" ]; then
-          echo "Dockerfile знайдено у зовнішній папці!"
-          docker build -f LawFirmsHelper/Dockerfile -t ${{ secrets.ACR_LOGIN_SERVER }}/lawfirmshelper:latest ./LawFirmsHelper
-        else
-          echo "ПОМИЛКА: Dockerfile не знайдено! Перевір назву файлу."
-          exit 1
+          DOCKERFILE="LawFirmsHelper/Dockerfile"
         fi
-        
+        docker build -f $DOCKERFILE -t ${{ secrets.ACR_LOGIN_SERVER }}/lawfirmshelper:latest ./LawFirmsHelper
         docker push ${{ secrets.ACR_LOGIN_SERVER }}/lawfirmshelper:latest
+
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+    steps:
+    - name: Оновлення Azure Container App
+      run: echo "Тут буде команда деплою після того, як ми створимо сервер в Azure!"
