@@ -1,7 +1,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
+
 COPY ["LawFirmsHelper.csproj", "./"]
 RUN dotnet restore "LawFirmsHelper.csproj"
+
 COPY . .
 RUN dotnet publish "LawFirmsHelper.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
