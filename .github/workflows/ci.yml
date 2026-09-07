@@ -20,7 +20,6 @@ jobs:
         password: ${{ secrets.ACR_PASSWORD }}
 
     - name: Збираємо та пушимо Docker імедж
-      working-directory: ./LawFirmsHelper
       run: |
-        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/lawfirmshelper:latest .
+        docker build -f LawFirmsHelper/LawFirmsHelper/Dockerfile -t ${{ secrets.ACR_LOGIN_SERVER }}/lawfirmshelper:latest ./LawFirmsHelper
         docker push ${{ secrets.ACR_LOGIN_SERVER }}/lawfirmshelper:latest
