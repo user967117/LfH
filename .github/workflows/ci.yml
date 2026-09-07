@@ -1,0 +1,26 @@
+name: Build and Push to ACR
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Отримуємо код
+      uses: actions/checkout@v4
+
+    - name: Логінимось в Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Збираємо та пушимо Docker імедж
+      working-directory: ./LawFirmsHelper
+      run: |
+        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/lawfirmshelper:latest .
+        docker push ${{ secrets.ACR_LOGIN_SERVER }}/lawfirmshelper:latest
