@@ -58,4 +58,4 @@ jobs:
         with:
           resourceGroup: LawFirmsHelper-rg
           containerAppName: lawfirms-api
-          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          imageToDeploy: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
