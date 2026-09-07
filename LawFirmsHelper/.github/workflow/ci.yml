@@ -44,7 +44,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-     - name: Azure CLI Login
+      - name: Azure CLI Login
         run: |
           az login --service-principal \
             -u "${{ secrets.AZURE_CLIENT_ID }}" \
