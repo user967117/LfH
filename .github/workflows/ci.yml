@@ -20,7 +20,16 @@ jobs:
         password: ${{ secrets.ACR_PASSWORD }}
 
     - name: Збираємо та пушимо Docker імедж
-      working-directory: ./LawFirmsHelper
       run: |
-        docker build -f $DOCKERFILE_PATH -t ${{ secrets.ACR_LOGIN_SERVER }}/lawfirmshelper:latest .
+        if [ -f "LawFirmsHelper/LawFirmsHelper/Dockerfile" ]; then
+          echo "Dockerfile знайдено у внутрішній папці!"
+          docker build -f LawFirmsHelper/LawFirmsHelper/Dockerfile -t ${{ secrets.ACR_LOGIN_SERVER }}/lawfirmshelper:latest ./LawFirmsHelper
+        elif [ -f "LawFirmsHelper/Dockerfile" ]; then
+          echo "Dockerfile знайдено у зовнішній папці!"
+          docker build -f LawFirmsHelper/Dockerfile -t ${{ secrets.ACR_LOGIN_SERVER }}/lawfirmshelper:latest ./LawFirmsHelper
+        else
+          echo "ПОМИЛКА: Dockerfile не знайдено! Перевір назву файлу."
+          exit 1
+        fi
+        
         docker push ${{ secrets.ACR_LOGIN_SERVER }}/lawfirmshelper:latest
