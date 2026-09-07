@@ -17,10 +17,10 @@ jobs:
         dotnet-version: '9.0.x'
         
     - name: Відновлюємо залежності та компілюємо
-      run: dotnet build ./LawFirmsHelper/LawFirmsHelper.csproj
+      run: dotnet build ./LawFirmsHelper/LawFirmsHelper.sln
       
     - name: Запускаємо xUnit тести
-      run: dotnet test ./LawFirmsHelper/LawFirmsHelper.csproj --no-build --verbosity normal
+      run: dotnet test ./LawFirmsHelper/LawFirmsHelper.sln --no-build --verbosity normal
 
   docker:
     needs: build-and-test
