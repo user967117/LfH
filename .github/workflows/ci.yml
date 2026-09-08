@@ -59,5 +59,7 @@ jobs:
         with:
           resourceGroup: LawFirmsHelper-rg
           containerAppName: lawfirms-api
-          # Тут тепер точно imageToDeploy
           imageToDeploy: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          registryUrl: ghcr.io
+          registryUsername: ${{ github.actor }}
+          registryPassword: ${{ secrets.GHCR_PAT }}
