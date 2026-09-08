@@ -10,4 +10,7 @@ await app.SeedDatabaseAsync();
 app.UseEndpointExtensions();
 app.UseMiddlewares();
 
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.Run();
