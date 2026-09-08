@@ -7,7 +7,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/lawfirmshelper
+  # Жодних великих літер, щоб Docker не сварився!
+  IMAGE_NAME: it-sadok/lawfirmshelper
 
 jobs:
   build-and-deploy:
@@ -58,4 +59,5 @@ jobs:
         with:
           resourceGroup: LawFirmsHelper-rg
           containerAppName: lawfirms-api
+          # Тут тепер точно imageToDeploy
           imageToDeploy: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
