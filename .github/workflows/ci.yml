@@ -7,16 +7,30 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # Жодних великих літер, щоб Docker не сварився!
   IMAGE_NAME: it-sadok/lawfirmshelper
 
 jobs:
-  build-and-deploy:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+          
+      - name: Build project
+        # Шлях до папки з твоїм проєктом
+        run: dotnet build ./LawFirmsHelper
+
+  docker:
+    needs: build-and-test
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -46,6 +60,10 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+    steps:
       - name: Azure CLI Login
         run: |
           az login --service-principal \
